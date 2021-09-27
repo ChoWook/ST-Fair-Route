@@ -3,8 +3,12 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/KCW/Desktop/MyFirstGoogleMap/app/src/main/res/drawable/ic_no_background.xml" value="0.21354166666666666" />
+        <entry key="..\:/Users/KCW/Desktop/MyFirstGoogleMap/app/src/main/res/drawable/ic_no_foreground.xml" value="0.21354166666666666" />
         <entry key="..\:/Users/KCW/Desktop/MyFirstGoogleMap/app/src/main/res/layout/activity_main.xml" value="0.19739583333333333" />
         <entry key="..\:/Users/KCW/Desktop/MyFirstGoogleMap/app/src/main/res/layout/activity_maps.xml" value="0.19739583333333333" />
+        <entry key="..\:/Users/KCW/Desktop/MyFirstGoogleMap/app/src/main/res/layout/menu_bottom_navigation.xml" value="0.19739583333333333" />
+        <entry key="..\:/Users/KCW/Desktop/MyFirstGoogleMap/app/src/main/res/layout/menu_bottom_navigiation.xml" value="0.19739583333333333" />
       </map>
     </option>
   </component>

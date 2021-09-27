@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <fragment xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:map="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -6,4 +7,39 @@
     android:name="com.google.android.gms.maps.SupportMapFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MapsActivity" />
+    tools:context=".MapsActivity" >
+
+    <LinearLayout
+        android:layout_gravity="bottom"
+        android:layout_height="30dp"
+        android:layout_width="match_parent"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/btn_no"
+            android:layout_height="80dp"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:src="@drawable/ic_no"
+            />
+
+        <ImageButton
+            android:id="@+id/btn_disabled"
+            android:layout_height="80dp"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:src="@drawable/ic_disabled"
+            />
+
+        <ImageButton
+            android:id="@+id/btn_smoke"
+            android:layout_height="80dp"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:src="@drawable/ic_smoke"
+            />
+
+    </LinearLayout>
+
+
+</fragment>
