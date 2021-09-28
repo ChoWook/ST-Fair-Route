@@ -1,35 +1,31 @@
 package com.example.myfirstgooglemap;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.ImageButton;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.example.myfirstgooglemap.databinding.ActivityMapsBinding;
-
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-    private ActivityMapsBinding binding;
+    //private ActivityMapsBinding binding;
+    private LatLng center;
     private ImageButton imgbtn_no, imgbtn_disabled, imgbtn_smoke;
+    private AutoCompleteTextView autotext_building;
+    private ArrayAdapter<String> stringadt_building;
 
-    private double disabledParkingPoints[] = {
+    private static final double DISABLED_PARKING_POINTS[] = {
             37.635782, 127.076478,   // 성림학사
         37.635043, 127.076773,  // 어의관
         37.635024, 127.077384,  // 어학원
@@ -54,7 +50,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         37.630063, 127.081388,   // 미래관
         37.628661, 127.081079   // 학군단
     };
-    private LatLng center;
+
+    private static final String[] BUILDING_NAMES = new String[] {
+      "미래관", "창학관", "테크노 큐브"
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +75,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         imgbtn_no  = mapFragment.getView().findViewById(R.id.btn_no);
         imgbtn_disabled = mapFragment.getView().findViewById(R.id.btn_disabled);
         imgbtn_smoke = mapFragment.getView().findViewById(R.id.btn_smoke);
+        autotext_building = mapFragment.getView().findViewById(R.id.autotext_building);
+
+        //어뎁터 할당
+        stringadt_building = new ArrayAdapter<String>(mapFragment.getContext(), android.R.layout.simple_dropdown_item_1line, BUILDING_NAMES);
+        autotext_building.setAdapter(stringadt_building);
+
 
         // 버튼 클릭 리스너 설정
         imgbtn_no.setOnClickListener(new View.OnClickListener() {
@@ -127,8 +132,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setLatLngBoundsForCameraTarget(adelaideBounds);
 
 
-        for(int i = 0; i < disabledParkingPoints.length; i+=2){
-            mMap.addMarker(new MarkerOptions().position(new LatLng(disabledParkingPoints[i], disabledParkingPoints[i+1])));
+        for(int i = 0; i < DISABLED_PARKING_POINTS.length; i+=2){
+            mMap.addMarker(new MarkerOptions().position(new LatLng(DISABLED_PARKING_POINTS[i], DISABLED_PARKING_POINTS[i+1])));
         }
     }
 }
