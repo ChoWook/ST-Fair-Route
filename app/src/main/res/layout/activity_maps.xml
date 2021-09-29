@@ -45,7 +45,7 @@
             android:layout_height="80dp"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:src="@drawable/ic_no"
+            android:src="@drawable/ic_mark_wheel"
             />
 
         <ImageButton
@@ -53,7 +53,7 @@
             android:layout_height="80dp"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:src="@drawable/ic_disabled"
+            android:src="@drawable/ic_mark_parking"
             />
 
         <ImageButton
@@ -61,7 +61,7 @@
             android:layout_height="80dp"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:src="@drawable/ic_smoke"
+            android:src="@drawable/ic_mark_smoking"
             />
 
     </LinearLayout>

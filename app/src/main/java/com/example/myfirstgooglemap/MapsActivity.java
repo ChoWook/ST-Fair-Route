@@ -1,7 +1,12 @@
 package com.example.myfirstgooglemap;
 
+import androidx.annotation.DrawableRes;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.FragmentActivity;
 
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -12,6 +17,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -202,15 +209,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
         // 장애인 주차 구역 마커 설정
+        BitmapDescriptor bitmap_disabled = GetBitmapDescriptor(R.drawable.ic_mark_parking);
         for(int i = 0; i < DISABLED_PARKING_POINTS.length; i+=2){
             Marker m = mMap.addMarker(new MarkerOptions().position(new LatLng(DISABLED_PARKING_POINTS[i], DISABLED_PARKING_POINTS[i+1])));
+            m.setIcon(bitmap_disabled);
             m.setVisible(false);
             markers_disabled.add(m);
         }
 
-        // 장애인 주차 구역 마커 설정
+        // 흡연 구역 마커 설정
+        BitmapDescriptor bitmap_smoking = GetBitmapDescriptor(R.drawable.ic_mark_smoking);
         for(int i = 0; i < SMOKING_AREA_POINTS.length; i+=2){
             Marker m = mMap.addMarker(new MarkerOptions().position(new LatLng(SMOKING_AREA_POINTS[i], SMOKING_AREA_POINTS[i+1])));
+            m.setIcon(bitmap_smoking);
             m.setVisible(false);
             markers_smoking.add(m);
         }
@@ -233,5 +244,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 markers.get(i).setVisible(true);
             };
         }
+    }
+
+    private BitmapDescriptor GetBitmapDescriptor(@DrawableRes int id) {
+        Drawable vectorDrawable = ResourcesCompat.getDrawable(getResources(), id, null);
+        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(),
+                vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        vectorDrawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        vectorDrawable.draw(canvas);
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
 }
