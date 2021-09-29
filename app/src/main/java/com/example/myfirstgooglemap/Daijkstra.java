@@ -5,8 +5,7 @@ import java.util.*;
 public class Daijkstra {
     private static int INFINITE = 1000000; // 다익스트라 알고리즘을 위한 초기값
     private static int dist[]; // 가중치(거리)
-    private static final int NODE = 17; // 노드(학교 장소) 갯수
-    private static final int EDGE = 26; // 간선(노선) 갯수
+    private static final int NODE = 43; // 노드(학교 장소) 갯수
     private static int parent[]; // 경로 저장
     private static int spotCnt; // 경로를 지난 노드 수
 
