@@ -14,7 +14,10 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.ArrayList;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -24,34 +27,53 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ImageButton imgbtn_no, imgbtn_disabled, imgbtn_smoke;
     private AutoCompleteTextView autotext_building;
     private ArrayAdapter<String> stringadt_building;
+    private ArrayList<Marker> markers_disabled, markers_smoking,markers_building;
 
-    private static final double DISABLED_PARKING_POINTS[] = {
+    private static final double[] DISABLED_PARKING_POINTS = {
             37.635782, 127.076478,   // 성림학사
-        37.635043, 127.076773,  // 어의관
-        37.635024, 127.077384,  // 어학원
-        37.635181, 127.077881,  // 다빈치관
-        37.635418, 127.078644,  // 다반치관 뒤
-        37.634893, 127.078727,   // 다빈치관 2
-        37.632736, 127.076647,   // 도서관
-        37.631298, 127.076540,   // 하이테크관
-        37.630884, 127.076612,   // 하이테크관 2
-        37.631987, 127.079457,   // 창학관
-        37.630690, 127.079890,   // 상상관
-        37.630654, 127.080113,   // 상상관 2
-        37.629943, 127.079822,   // 테크노 큐브브
-        37.629418, 127.079333,   // 체육관
-        37.634616, 127.079499,   // 창조관
-        37.634180, 127.081226,   // 테크노파크
-        37.634395, 127.081159,   // 테크노파크 2
-        37.633069, 127.080874,   // 청운관
-        37.632762, 127.079377,   // 창학관
-        37.631430, 127.080446,   // 대학본부
-        37.631472, 127.080906,   // 대학본부 2
-        37.630063, 127.081388,   // 미래관
-        37.628661, 127.081079   // 학군단
+            37.635043, 127.076773,  // 어의관
+            37.635024, 127.077384,  // 어학원
+            37.635181, 127.077881,  // 다빈치관
+            37.635418, 127.078644,  // 다반치관 뒤
+            37.634893, 127.078727,   // 다빈치관 2
+            37.632736, 127.076647,   // 도서관
+            37.631298, 127.076540,   // 하이테크관
+            37.630884, 127.076612,   // 하이테크관 2
+            37.631987, 127.079457,   // 창학관
+            37.630690, 127.079890,   // 상상관
+            37.630654, 127.080113,   // 상상관 2
+            37.629943, 127.079822,   // 테크노 큐브브
+            37.629418, 127.079333,   // 체육관
+            37.634616, 127.079499,   // 창조관
+            37.634180, 127.081226,   // 테크노파크
+            37.634395, 127.081159,   // 테크노파크 2
+            37.633069, 127.080874,   // 청운관
+            37.632762, 127.079377,   // 창학관
+            37.631430, 127.080446,   // 대학본부
+            37.631472, 127.080906,   // 대학본부 2
+            37.630063, 127.081388,   // 미래관
+            37.628661, 127.081079   // 학군단
     };
 
-    private static final double BUILDING_POINTS[] = {
+    private static final double[] SMOKING_AREA_POINTS ={
+            37.630713, 127.081326,  // 무궁관
+            37.629591, 127.080873,  // 미래관
+            37.631827, 127.082108,  // 혜성관
+            37.634577, 127.080723,  // 테크노파크
+            37.633451, 127.079107,  // 파워플랜트
+            37.634243, 127.077463,  // 1학
+            37.633387, 127.076363,  // 도서관
+            37.635256, 127.077838,  // 어학원
+            37.635253, 127.075544,  // 성림학사
+            37.636265, 127.076488,  // 불암학사
+            37.632136, 127.076447,  // 하이테크관
+            37.631622, 127.075835,  // 프론티어관
+            37.630627, 127.077733,  // 100주년기념관
+            37.629124, 127.079813,  // 체육관
+            37.630542, 127.080306  // 아름관
+    };
+
+    private static final double[] BUILDING_POINTS = {
             37.631670, 127.080185, // 1 대학본부
             37.632083, 127.077907,// 2 다산관
             37.632073, 127.079401, // 3 창학관
@@ -108,8 +130,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //setContentView(binding.getRoot());
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
         //LatLng 값 할당
@@ -125,6 +146,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         stringadt_building = new ArrayAdapter<String>(mapFragment.getContext(), android.R.layout.simple_dropdown_item_1line, BUILDING_NAMES);
         autotext_building.setAdapter(stringadt_building);
 
+        // 리스트 초기화
+        markers_disabled = new ArrayList<>();
+        markers_smoking = new ArrayList<>();
+        markers_building = new ArrayList<>();
 
         // 버튼 클릭 리스너 설정
         imgbtn_no.setOnClickListener(new View.OnClickListener() {
@@ -137,14 +162,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         imgbtn_disabled.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                ToggleMarkersVisibility(markers_disabled);
             }
         });
 
         imgbtn_smoke.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                ToggleMarkersVisibility(markers_smoking);
             }
         });
     }
@@ -176,14 +201,37 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setLatLngBoundsForCameraTarget(adelaideBounds);
 
 
-        // 장애인 주차 구역
+        // 장애인 주차 구역 마커 설정
         for(int i = 0; i < DISABLED_PARKING_POINTS.length; i+=2){
-            //mMap.addMarker(new MarkerOptions().position(new LatLng(DISABLED_PARKING_POINTS[i], DISABLED_PARKING_POINTS[i+1])));
+            Marker m = mMap.addMarker(new MarkerOptions().position(new LatLng(DISABLED_PARKING_POINTS[i], DISABLED_PARKING_POINTS[i+1])));
+            m.setVisible(false);
+            markers_disabled.add(m);
         }
 
-        // 건물
+        // 장애인 주차 구역 마커 설정
+        for(int i = 0; i < SMOKING_AREA_POINTS.length; i+=2){
+            Marker m = mMap.addMarker(new MarkerOptions().position(new LatLng(SMOKING_AREA_POINTS[i], SMOKING_AREA_POINTS[i+1])));
+            m.setVisible(false);
+            markers_smoking.add(m);
+        }
+
+        // 건물 마커 설정
         for(int i = 0; i < BUILDING_POINTS.length; i+=2){
-            mMap.addMarker(new MarkerOptions().position(new LatLng(BUILDING_POINTS[i], BUILDING_POINTS[i+1])));
+            markers_building.add(mMap.addMarker(new MarkerOptions().position(new LatLng(BUILDING_POINTS[i], BUILDING_POINTS[i+1]))));
+        }
+    }
+
+    private void ToggleMarkersVisibility(ArrayList<Marker> markers){
+        int size = markers.size();
+        if(markers.get(0).isVisible()){    // 마커가 표시 중이라면 보이지 않게 만들기
+            for(int i = 0; i < size; i++){
+                markers.get(i).setVisible(false);
+            };
+        }
+        else{                                       // 마커가 표시 중이 아니라면 보이게 만들기
+            for(int i = 0; i < size; i++){
+                markers.get(i).setVisible(true);
+            };
         }
     }
 }
