@@ -1,4 +1,6 @@
 package com.example.myfirstgooglemap;
+import static java.lang.Boolean.TRUE;
+
 import java.io.*;
 import java.util.*;
 
@@ -6,6 +8,7 @@ public class Daijkstra {
     private static int INFINITE = 1000000; // 다익스트라 알고리즘을 위한 초기값
     private static int dist[]; // 가중치(거리)
     private static final int NODE = 43; // 노드(학교 장소) 갯수
+    public static Vertex[] vertex = new Vertex[NODE]; // 노드 저장
     private static int parent[]; // 경로 저장
     private static int spotCnt; // 경로를 지난 노드 수
 
@@ -30,13 +33,40 @@ public class Daijkstra {
         endNode = en;
     }
 
-    public void calDaijkstra() throws IOException {
+    // 라디안 값 계산
+    public double rad(double x){
+        return (x * Math.PI) / 180;
+    }
 
-        File sourceFile = new File("path.txt");
+    // 위도와 경도를 기준으로 두 지점 간의 거리측정
+    public int calDistance(Vertex p1, Vertex p2){
+        int R = 6378137; // 지구 반지름
+        double dLat = rad(p2.latitude - p1.latitude);
+        double dLong = rad(p2.longitude - p1.longitude);
+
+        double a =
+                Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                        Math.cos(rad(p1.latitude)) * Math.cos(rad(p2.latitude)) * Math.sin(dLong / 2) * Math.sin(dLong / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double d = R * c;
+        return (int)d; // returns the distance in meter
+    }
+
+    public void calDaijkstra(boolean disabled) throws IOException {
+        // 장애유무에 따라 간선정보를 다르게 입력합니다.
+        File sourceFile;
+        if (disabled == TRUE)
+            sourceFile = new File("disabled_path.txt");
+        else
+            sourceFile = new File("normal_path.txt");
+
+        // 해당 파일이 없을 경우, 예외처리
         if (!sourceFile.exists()) {
             System.out.println("path 파일이 존재하지 않습니다.");
             System.exit(2);
         }
+
+        // 간선정보를 입력할 인접리스트
         ArrayList<Spot> SpotList[];
         SpotList = new ArrayList[NODE + 1];
 
@@ -53,7 +83,7 @@ public class Daijkstra {
 
             int start = Integer.parseInt(st.nextToken());
             int end = Integer.parseInt(st.nextToken());
-            int cost = Integer.parseInt(st.nextToken());
+            int cost = calDistance(vertex[start], vertex[end]);
 
             // 두 spot간의 거리를 추가합니다.
             SpotList[start].add(new Spot(end, cost));
@@ -132,9 +162,5 @@ public class Daijkstra {
     }
     public int getTime() {
         return trableTime;
-    }
-
-    public int[] FindPath(int type /*장애인 or 비장애인*/, int start, int destination){
-        return null;
     }
 }
