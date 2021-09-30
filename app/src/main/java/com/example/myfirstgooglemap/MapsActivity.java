@@ -211,7 +211,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
         // 장애인 주차 구역 마커 설정
-        BitmapDescriptor bitmap_disabled = GetBitmapDescriptor(R.drawable.ic_mark_parking);
+        BitmapDescriptor bitmap_disabled = GetBitmapDescriptor(R.drawable.ic_mark_parking, 70);
         for(int i = 0; i < DISABLED_PARKING_POINTS.length; i+=2){
             Marker m = mMap.addMarker(new MarkerOptions().position(new LatLng(DISABLED_PARKING_POINTS[i], DISABLED_PARKING_POINTS[i+1])));
             m.setIcon(bitmap_disabled);
@@ -220,7 +220,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         // 흡연 구역 마커 설정
-        BitmapDescriptor bitmap_smoking = GetBitmapDescriptor(R.drawable.ic_mark_smoking);
+        BitmapDescriptor bitmap_smoking = GetBitmapDescriptor(R.drawable.ic_mark_smoking, 70);
         for(int i = 0; i < SMOKING_AREA_POINTS.length; i+=2){
             Marker m = mMap.addMarker(new MarkerOptions().position(new LatLng(SMOKING_AREA_POINTS[i], SMOKING_AREA_POINTS[i+1])));
             m.setIcon(bitmap_smoking);
@@ -248,10 +248,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    private BitmapDescriptor GetBitmapDescriptor(@DrawableRes int id) {
+    private BitmapDescriptor GetBitmapDescriptor(@DrawableRes int id, int size) {
         Drawable vectorDrawable = ResourcesCompat.getDrawable(getResources(), id, null);
-        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(),
-                vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth() * size / 100,
+                vectorDrawable.getIntrinsicHeight() * size / 100, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         vectorDrawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
         vectorDrawable.draw(canvas);
