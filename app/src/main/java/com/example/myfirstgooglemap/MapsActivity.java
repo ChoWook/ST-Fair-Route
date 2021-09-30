@@ -25,6 +25,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
+import java.io.*;
+import java.util.*;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -35,6 +37,35 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private AutoCompleteTextView autotext_building;
     private ArrayAdapter<String> stringadt_building;
     private ArrayList<Marker> markers_disabled, markers_smoking,markers_building;
+
+    private static final int NODE = 43; // 노드(학교 장소) 갯수
+    public static Vertex[] vertex = new Vertex[NODE]; // vertex 객체배열
+
+    public static void setVertex() throws IOException{
+        File vertexFile = new File("vertex.txt"); // 한줄씩 위도, 경도, 건물번호, 이름
+
+        // 해당 파일이 없을 경우, 예외처리
+        if (!vertexFile.exists()) {
+            System.out.println("vertex 파일이 존재하지 않습니다.");
+            System.exit(2);
+        }
+
+        Scanner input = new Scanner(vertexFile);
+        int vertexNum = 0;
+
+        // path문서의 인접노드와 거리값을 SpotList에 저장합니다.
+        // 하... vertex class도 get/set 메서드 만들어야하나..
+        while(input.hasNext()){
+            StringTokenizer st = new StringTokenizer(input.nextLine());
+
+            vertex[vertexNum].latitude = Double.parseDouble(st.nextToken());
+            vertex[vertexNum].longitude = Double.parseDouble(st.nextToken());
+            vertex[vertexNum].id = Integer.parseInt(st.nextToken());
+            vertex[vertexNum].name = st.nextToken();
+            vertexNum++;
+        }
+        input.close();
+    }
 
     private static final double[] DISABLED_PARKING_POINTS = {
             37.635782, 127.076478,   // 성림학사
