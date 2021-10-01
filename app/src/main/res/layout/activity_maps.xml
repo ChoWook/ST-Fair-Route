@@ -1,14 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:map="http://schemas.android.com/apk/res-auto"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/map"
-    android:name="com.google.android.gms.maps.SupportMapFragment"
+    tools:context=".MapsActivity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MapsActivity"
-    android:orientation="vertical">
+    >
+
+    <com.sothree.slidinguppanel.SlidingUpPanelLayout
+        android:id="@+id/layout_slide"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="bottom">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+
+            <fragment
+                xmlns:map="http://schemas.android.com/apk/res-auto"
+
+                android:id="@+id/map"
+                android:name="com.google.android.gms.maps.SupportMapFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+
+
+                    <LinearLayout
+                        android:id="@+id/layout_bottom_btns"
+                        android:layout_alignParentBottom="true"
+                        android:layout_height="50dp"
+                        android:layout_width="match_parent"
+                        android:orientation="horizontal">
+
+                        <ImageButton
+                            android:id="@+id/btn_no"
+                            android:layout_height="80dp"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:src="@drawable/ic_mark_wheel"
+                            />
+
+                        <ImageButton
+                            android:id="@+id/btn_disabled"
+                            android:layout_height="80dp"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:src="@drawable/ic_mark_parking"
+                            />
+
+                        <ImageButton
+                            android:id="@+id/btn_smoke"
+                            android:layout_height="80dp"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:src="@drawable/ic_mark_smoking"
+                            />
+
+                    </LinearLayout>
+
+                </RelativeLayout>
+
+            </fragment>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/layout_slide_up"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:background="@color/white"
+            >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="미래관"
+                />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:text="길찾기"
+                />
+
+        </RelativeLayout>
+
+    </com.sothree.slidinguppanel.SlidingUpPanelLayout>
 
 
     <LinearLayout
@@ -26,6 +112,7 @@
             />
 
         <Button
+            android:id="@+id/btn_search"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -34,36 +121,4 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_gravity="bottom"
-        android:layout_height="50dp"
-        android:layout_width="match_parent"
-        android:orientation="horizontal">
-
-        <ImageButton
-            android:id="@+id/btn_no"
-            android:layout_height="80dp"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:src="@drawable/ic_mark_wheel"
-            />
-
-        <ImageButton
-            android:id="@+id/btn_disabled"
-            android:layout_height="80dp"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:src="@drawable/ic_mark_parking"
-            />
-
-        <ImageButton
-            android:id="@+id/btn_smoke"
-            android:layout_height="80dp"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:src="@drawable/ic_mark_smoking"
-            />
-
-    </LinearLayout>
-
-</fragment>
+</RelativeLayout>
