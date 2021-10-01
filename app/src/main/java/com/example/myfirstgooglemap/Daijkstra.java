@@ -36,9 +36,9 @@ public class Daijkstra {
         // 장애유무에 따라 간선정보를 다르게 입력합니다.
         File sourceFile;
         if (disabled == TRUE)
-            sourceFile = new File("disabled_path.txt");
+            sourceFile = new File("/res/raw/edge_disabled.txt");
         else
-            sourceFile = new File("normal_path.txt");
+            sourceFile = new File("/res/raw/edge.txt");
 
         // 해당 파일이 없을 경우, 예외처리
         if (!sourceFile.exists()) {

@@ -42,7 +42,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public static Vertex[] vertex = new Vertex[NODE]; // vertex 객체배열
 
     public static void setVertex() throws IOException{
-        File vertexFile = new File("vertex.txt"); // 한줄씩 위도, 경도, 건물번호, 이름
+        File vertexFile = new File("/res/raw/vertex.txt"); // 한줄씩 위도, 경도, 건물번호, 이름
 
         // 해당 파일이 없을 경우, 예외처리
         if (!vertexFile.exists()) {
@@ -53,7 +53,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Scanner input = new Scanner(vertexFile);
         int vertexNum = 0;
 
-        // path문서의 인접노드와 거리값을 SpotList에 저장합니다.
         // 하... vertex class도 get/set 메서드 만들어야하나..
         while(input.hasNext()){
             StringTokenizer st = new StringTokenizer(input.nextLine());
