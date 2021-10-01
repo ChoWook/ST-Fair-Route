@@ -17,19 +17,18 @@ public class Daijkstra {
     private int meter; // 총 거리
     private int trableTime; // 가는 데까지 예상 필요시간
 
-    // no-arg 생성자
-    public Daijkstra() {
+    // 외부에서 인스턴스 생성을 막기 위한 private 생성자
+    private Daijkstra() {
     }
 
-    // 도착지만 입력한 경우
-    public Daijkstra(int en) {
-        endNode = en;
+    // 싱글톤 패턴
+    private static class Singleton{
+        private static final Daijkstra INSTANCE = new Daijkstra();
     }
 
-    // 출발지와 도착지 입력한 경우
-    public Daijkstra(int sn, int en) {
-        startNode = sn;
-        endNode = en;
+    // 다익스트라 유일 인스턴스 get Method
+    public static Daijkstra getInstance(){
+        return Singleton.INSTANCE;
     }
 
     public void calDaijkstra(boolean disabled, Vertex[] vertex) throws IOException {
