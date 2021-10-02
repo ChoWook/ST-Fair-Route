@@ -11,10 +11,9 @@ public class Vertex {
     Boolean is_smoke = false;
     Boolean is_disabled = false;
     Boolean is_slope = false;
-    Bitmap[] pictures;
 
 
-    public Vertex(double lati, double longi, int id, String name, String name_eng, Boolean is_smoke, Boolean is_disabled, Boolean is_slope,Bitmap[] pictures) {
+    public Vertex(double lati, double longi, int id, String name, String name_eng, Boolean is_smoke, Boolean is_disabled, Boolean is_slope) {
         this.latitude = lati;
         this.longitude = longi;
         this.id = id;
@@ -23,7 +22,6 @@ public class Vertex {
         this.is_smoke = is_smoke;
         this.is_disabled = is_disabled;
         this.is_slope = is_slope;
-        this.pictures = pictures;
     }
 
     // 위도와 경도를 기준으로 두 지점 간의 거리측정

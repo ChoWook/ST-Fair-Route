@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -33,6 +34,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.io.*;
 import java.util.*;
@@ -56,7 +58,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ArrayList<Marker> markers_disabled, markers_smoking,markers_building;
 
     private static final int NODE = 43; // 노드(학교 장소) 갯수
-    public static Vertex[] vertex = new Vertex[NODE]; // vertex 객체배열
+    public ArrayList<Vertex> vertex;       // vertex 객체배열
 
     private static final double[] DISABLED_PARKING_POINTS = {
             37.635782, 127.076478,   // 성림학사
@@ -193,6 +195,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         markers_disabled = new ArrayList<>();
         markers_smoking = new ArrayList<>();
         markers_building = new ArrayList<>();
+        vertex = new ArrayList<>();
         
         // Vertex 초기화
         try {
@@ -243,7 +246,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         layout_bottom_btns.setVisibility(View.GONE);
 
                         // TODO 검색어에 따라서 패널에 정보 추가 하기
+
                         
+                        // TODO 카메라 줌 인
                         
                         break;
                     }
@@ -320,36 +325,34 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
 
-    public static void setVertex() throws IOException{
-        File vertexFile = new File("vertex.txt"); // 한줄씩 위도, 경도, 건물번호, 이름
+    public void setVertex() throws IOException{
+        try {
+            InputStream is = this.getApplicationContext().getResources().openRawResource(R.raw.vertex);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+            String line;
 
-        // 해당 파일이 없을 경우, 예외처리s
-        if (!vertexFile.exists()) {
-            System.out.println("vertex 파일이 존재하지 않습니다.");
-            //System.exit(2);
-            throw new IOException("vertex 파일이 존재하지 않습니다");
+            int vertexNum = 0;
+
+            while ((line = reader.readLine()) != null) {
+                String[] st = line.split(" ");
+
+                Vertex v = new Vertex(Double.parseDouble(st[0]),
+                        Double.parseDouble(st[1]),
+                        Integer.parseInt(st[2]),
+                        st[3],
+                        st[4],
+                        Integer.parseInt(st[5]) == 1,
+                        Integer.parseInt(st[6]) == 1,
+                        Integer.parseInt(st[7]) == 1
+                        );
+                vertex.add(v);
+
+                vertexNum++;
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+            Toast.makeText(getApplicationContext(),e.toString(),Toast.LENGTH_LONG).show();
         }
-
-        Scanner input = new Scanner(vertexFile);
-        int vertexNum = 0;
-
-        // path문서의 인접노드와 거리값을 SpotList에 저장합니다.
-        // 하... vertex class도 get/set 메서드 만들어야하나..
-        while(input.hasNext()){
-            StringTokenizer st = new StringTokenizer(input.nextLine());
-
-            vertex[vertexNum].latitude = Double.parseDouble(st.nextToken());
-            vertex[vertexNum].longitude = Double.parseDouble(st.nextToken());
-            vertex[vertexNum].id = Integer.parseInt(st.nextToken());
-            vertex[vertexNum].name = st.nextToken();
-            vertex[vertexNum].name_eng = st.nextToken();
-            vertex[vertexNum].is_smoke = Integer.parseInt(st.nextToken()) == 1;
-            vertex[vertexNum].is_disabled = Integer.parseInt(st.nextToken()) == 1;
-            vertex[vertexNum].is_slope = Integer.parseInt(st.nextToken()) == 1;
-
-            vertexNum++;
-        }
-        input.close();
     }
 
     private void HideKeyboard(){
