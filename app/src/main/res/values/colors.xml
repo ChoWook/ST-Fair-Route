@@ -1,10 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <color name="colorPrimary">#000000</color>
+    <color name="light_black">#434343</color>
+    <color name="colorPrimaryDark">#eef2f5</color>
+    <color name="colorAccent">#03DAC5</color>
+    <color name="blue_purple">#8AA8FE</color>
+    <color name="light_gray">#F5F5F5</color>
+    <color name="dark_gray">#616161</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="yellow">#F3EFD9</color>
+    <color name="dark_yellow">#EDE4B5</color>
+    <color name="bg_gray">#F4F5F7</color>
+    <color name="light_green">#8EC5B4</color>
+    <color name="bg_yellow">#FAF8F5</color>
+    <color name="green">#6BA694</color>
+    <color name="tag_green">#B3D4CB</color>
+    <color name="light_blue">#D0DBEA</color>
+    <color name="line_color">#F5F5F5</color>
+    <color name="navy">#00387F</color>
+    <color name="home_plan_list">#F5F5F5</color>
+    <color name="pink_orange">#FF9D87</color>
+    <color name="profile_tag">#FD866B</color>
+    <color name="profile_old_tag">#E5DED3</color>
+    <color name="light_orange">#FFD5A6</color>
+    <color name="chat_left">#F5F1EB</color>
+    <color name="chat_right">#FEE5A5</color>
+    <color name="dark_black">#272727</color>
+    <color name="event_orange">#FFE2C1</color>
+    <color name="text_gray">#DADADA</color>
+    <color name="text_dark_gray">#575757</color>
+    <color name="home_keyword">#FEE5A5</color>
+
+
+
 </resources>
