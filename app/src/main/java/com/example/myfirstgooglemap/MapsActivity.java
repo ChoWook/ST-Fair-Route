@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentActivity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
@@ -31,7 +32,9 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
+import static java.lang.Boolean.FALSE;
 
 import java.util.ArrayList;
 import java.io.*;
@@ -57,6 +60,75 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private static final int NODE = 43; // 노드(학교 장소) 갯수
     public static Vertex[] vertex = new Vertex[NODE]; // vertex 객체배열
+
+    private PolylineOptions polylineOptions = new PolylineOptions();
+    polylineOptions.color(Color.RED);
+
+
+    public int convert(String spot) {
+        int result = -1; // 못 찾았을 경우, -1로 반환합니다.
+
+        // 건물이름으로 찾습니다.
+        for(int i = 0; i < NODE; i++) {
+            if(spot.equals(vertex[i].name) | spot.equals(vertex[i].name_eng)) {
+                return i;
+            }
+        }
+        return result;
+    }
+
+    // 길찾기 버튼 클릭 리스너 추가바람
+    btn_search.setOnClickListener(new View.OnClickListener(){
+        @Override
+        public void onClick(View view) {
+            // 출발지랑 도착지 넣는 텍스트 뷰에서 값 가져오기
+            int start = convert(autotext_building.getText().toString()); // 선택한 출발지를 객체배열의 고유번호로 바꿔줍니다.
+            int end = convert(end???.getText().toString()); // 선택한 도착지를 객체배열의 고유번호로 바꿔줍니다.
+
+            Daijkstra path = Daijkstra.getInstance(); // 다익스트라 singleton 객체 Path를 생성합니다.
+
+            try {
+                setVertex(); // vertex 초기화
+                path.calDaijkstra(FALSE, vertex); // 경로 계산
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            String[] pathNode = path.getPathNode().split(" ", 0); // 계산된 경로(String)을 연산을 위해 배열로 만듭니다.
+
+            // 캠퍼스지도상에 그릴 polyLine객체를 pathNode를 토대로 생성합니다.
+            for(int i = 1; i < pathNode.length; i++) {
+                System.out.println(pathNode[i-1]);
+                // polyline 그리는 코드
+            }
+
+            // 건물 고유숫자로 된 경로를 건물명으로 바꿉니다.
+            String pathInfo = "";
+            for(int i = 0; i < pathNode.length; i++) {
+                pathInfo += vertex[Integer.parseInt(pathNode[i])-1].name;
+                if(i == pathNode.length-1)
+                    break;
+                pathInfo += " -> ";
+            }
+
+            /* 있으면 좋을듯한 추가기능
+            int minute = path.getTime() / 60;
+            int second = path.getTime() % 60;
+
+            pathTf.setText("경로 : " + pathInfo + " (총 " + path.getNodeCount() + "곳 지남)"); // 경로 표시
+            meterTf.setText("거리 : " + path.getMeter() + "m"); // 거리 표시
+            timeTf.setText("예상 소요시간 : " + minute + "분 " + second + "초"); //
+            BorderPane textPn = new BorderPane();
+            pathTf.setPrefWidth(700);
+            meterTf.setPrefWidth(100);
+            timeTf.setPrefWidth(200);
+
+            textPn.setTop(pathTf);
+            textPn.setLeft(meterTf);
+            textPn.setCenter(timeTf);
+             */
+        }
+    });
+
 
     private static final double[] DISABLED_PARKING_POINTS = {
             37.635782, 127.076478,   // 성림학사
@@ -321,9 +393,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public static void setVertex() throws IOException{
-        File vertexFile = new File("vertex.txt"); // 한줄씩 위도, 경도, 건물번호, 이름
+        File vertexFile = new File("vertex.txt");
+        // 한줄씩 위도, 경도, 건물번호, 이름, 영어이름, 흡연구역 유무, 장애인주차구역 유무, 경사로 유무
 
-        // 해당 파일이 없을 경우, 예외처리s
+        // 해당 파일이 없을 경우, 예외처리
         if (!vertexFile.exists()) {
             System.out.println("vertex 파일이 존재하지 않습니다.");
             //System.exit(2);
@@ -333,8 +406,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Scanner input = new Scanner(vertexFile);
         int vertexNum = 0;
 
-        // path문서의 인접노드와 거리값을 SpotList에 저장합니다.
-        // 하... vertex class도 get/set 메서드 만들어야하나..
+        // Vertex파일을 읽어, vertex 객체배열을 초기화합니다.
         while(input.hasNext()){
             StringTokenizer st = new StringTokenizer(input.nextLine());
 

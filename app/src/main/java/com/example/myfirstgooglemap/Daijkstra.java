@@ -133,9 +133,7 @@ public class Daijkstra {
     public int getMeter() {
         return meter;
     }
-    public String getPathNode() {
-        return pathNode;
-    }
+    public String getPathNode() { return pathNode; }
     public int getNodeCount() {
         return spotCnt;
     }
