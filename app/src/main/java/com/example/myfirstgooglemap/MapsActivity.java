@@ -64,7 +64,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public ArrayList<Vertex> vertex;       // vertex 객체배열
 
     private PolylineOptions polylineOptions = new PolylineOptions();
-    polylineOptions.color(Color.RED);
 
 
     public int convert(String spot) {
@@ -72,64 +71,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // 건물이름으로 찾습니다.
         for(int i = 0; i < NODE; i++) {
-            if(spot.equals(vertex[i].name) | spot.equals(vertex[i].name_eng)) {
+            if(spot.equals(vertex.get(i).name) | spot.equals(vertex.get(i).name_eng)) {
                 return i;
             }
         }
         return result;
     }
-
-    // 길찾기 버튼 클릭 리스너 추가바람
-    btn_search.setOnClickListener(new View.OnClickListener(){
-        @Override
-        public void onClick(View view) {
-            // 출발지랑 도착지 넣는 텍스트 뷰에서 값 가져오기
-            int start = convert(autotext_building.getText().toString()); // 선택한 출발지를 객체배열의 고유번호로 바꿔줍니다.
-            int end = convert(end???.getText().toString()); // 선택한 도착지를 객체배열의 고유번호로 바꿔줍니다.
-
-            Daijkstra path = Daijkstra.getInstance(); // 다익스트라 singleton 객체 Path를 생성합니다.
-
-            try {
-                setVertex(); // vertex 초기화
-                path.calDaijkstra(FALSE, vertex); // 경로 계산
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
-            String[] pathNode = path.getPathNode().split(" ", 0); // 계산된 경로(String)을 연산을 위해 배열로 만듭니다.
-
-            // 캠퍼스지도상에 그릴 polyLine객체를 pathNode를 토대로 생성합니다.
-            for(int i = 1; i < pathNode.length; i++) {
-                System.out.println(pathNode[i-1]);
-                // polyline 그리는 코드
-            }
-
-            // 건물 고유숫자로 된 경로를 건물명으로 바꿉니다.
-            String pathInfo = "";
-            for(int i = 0; i < pathNode.length; i++) {
-                pathInfo += vertex[Integer.parseInt(pathNode[i])-1].name;
-                if(i == pathNode.length-1)
-                    break;
-                pathInfo += " -> ";
-            }
-
-            /* 있으면 좋을듯한 추가기능
-            int minute = path.getTime() / 60;
-            int second = path.getTime() % 60;
-
-            pathTf.setText("경로 : " + pathInfo + " (총 " + path.getNodeCount() + "곳 지남)"); // 경로 표시
-            meterTf.setText("거리 : " + path.getMeter() + "m"); // 거리 표시
-            timeTf.setText("예상 소요시간 : " + minute + "분 " + second + "초"); //
-            BorderPane textPn = new BorderPane();
-            pathTf.setPrefWidth(700);
-            meterTf.setPrefWidth(100);
-            timeTf.setPrefWidth(200);
-
-            textPn.setTop(pathTf);
-            textPn.setLeft(meterTf);
-            textPn.setCenter(timeTf);
-             */
-        }
-    });
 
 
     private static final double[] DISABLED_PARKING_POINTS = {
@@ -239,6 +186,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //LatLng 값 할당
         center = new LatLng(37.632503, 127.078933);
 
+        polylineOptions.color(Color.RED);
+
         // 뷰 할당
         imgbtn_no  = mapFragment.getView().findViewById(R.id.btn_no);
         imgbtn_disabled = mapFragment.getView().findViewById(R.id.btn_disabled);
@@ -326,6 +275,57 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                 }
 
+            }
+        });
+
+        img_search.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                // 출발지랑 도착지 넣는 텍스트 뷰에서 값 가져오기
+                int start = convert(autotext_building.getText().toString()); // 선택한 출발지를 객체배열의 고유번호로 바꿔줍니다.
+                int end = convert(end???.getText().toString()); // 선택한 도착지를 객체배열의 고유번호로 바꿔줍니다.
+
+                Daijkstra path = Daijkstra.getInstance(); // 다익스트라 singleton 객체 Path를 생성합니다.
+
+                try {
+                    setVertex(); // vertex 초기화
+                    path.calDaijkstra(FALSE, vertex); // 경로 계산
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+                String[] pathNode = path.getPathNode().split(" ", 0); // 계산된 경로(String)을 연산을 위해 배열로 만듭니다.
+
+                // 캠퍼스지도상에 그릴 polyLine객체를 pathNode를 토대로 생성합니다.
+                for(int i = 1; i < pathNode.length; i++) {
+                    System.out.println(pathNode[i-1]);
+                    // polyline 그리는 코드
+                }
+
+                // 건물 고유숫자로 된 경로를 건물명으로 바꿉니다.
+                String pathInfo = "";
+                for(int i = 0; i < pathNode.length; i++) {
+                    pathInfo += vertex.get(Integer.parseInt(pathNode[i])-1).name;
+                    if(i == pathNode.length-1)
+                        break;
+                    pathInfo += " -> ";
+                }
+
+            /* 있으면 좋을듯한 추가기능
+            int minute = path.getTime() / 60;
+            int second = path.getTime() % 60;
+
+            pathTf.setText("경로 : " + pathInfo + " (총 " + path.getNodeCount() + "곳 지남)"); // 경로 표시
+            meterTf.setText("거리 : " + path.getMeter() + "m"); // 거리 표시
+            timeTf.setText("예상 소요시간 : " + minute + "분 " + second + "초"); //
+            BorderPane textPn = new BorderPane();
+            pathTf.setPrefWidth(700);
+            meterTf.setPrefWidth(100);
+            timeTf.setPrefWidth(200);
+
+            textPn.setTop(pathTf);
+            textPn.setLeft(meterTf);
+            textPn.setCenter(timeTf);
+             */
             }
         });
 

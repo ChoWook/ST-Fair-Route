@@ -31,7 +31,7 @@ public class Daijkstra {
         return Singleton.INSTANCE;
     }
 
-    public void calDaijkstra(boolean disabled, Vertex[] vertex) throws IOException {
+    public void calDaijkstra(boolean disabled, ArrayList<Vertex> vertex) throws IOException {
         // 장애유무에 따라 간선정보를 다르게 입력합니다.
         File sourceFile;
         if (disabled == TRUE)
@@ -62,7 +62,7 @@ public class Daijkstra {
 
             int start = Integer.parseInt(st.nextToken());
             int end = Integer.parseInt(st.nextToken());
-            int cost = vertex[start].calDistance(vertex[end]);
+            int cost = vertex.get(start).calDistance(vertex.get(end));
 
             // 두 spot간의 거리를 추가합니다.
             SpotList[start].add(new Spot(end, cost));
