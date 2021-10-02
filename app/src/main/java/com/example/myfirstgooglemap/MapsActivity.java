@@ -4,14 +4,20 @@ import androidx.annotation.DrawableRes;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.FragmentActivity;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -23,6 +29,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
 import java.io.*;
@@ -31,40 +38,18 @@ import java.util.*;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-    //private ActivityMapsBinding binding;
     private LatLng center;
+    private Button btn_search;
     private ImageButton imgbtn_no, imgbtn_disabled, imgbtn_smoke;
+    private RelativeLayout layout_slide_up;
+    private LinearLayout layout_bottom_btns;
+    private SlidingUpPanelLayout layout_slide;
     private AutoCompleteTextView autotext_building;
     private ArrayAdapter<String> stringadt_building;
     private ArrayList<Marker> markers_disabled, markers_smoking,markers_building;
 
     private static final int NODE = 43; // 노드(학교 장소) 갯수
     public static Vertex[] vertex = new Vertex[NODE]; // vertex 객체배열
-
-    public static void setVertex() throws IOException{
-        File vertexFile = new File("/res/raw/vertex.txt"); // 한줄씩 위도, 경도, 건물번호, 이름
-
-        // 해당 파일이 없을 경우, 예외처리
-        if (!vertexFile.exists()) {
-            System.out.println("vertex 파일이 존재하지 않습니다.");
-            System.exit(2);
-        }
-
-        Scanner input = new Scanner(vertexFile);
-        int vertexNum = 0;
-
-        // path문서의 인접노드와 거리값을 SpotList에 저장합니다.
-        while(input.hasNext()){
-            StringTokenizer st = new StringTokenizer(input.nextLine());
-
-            vertex[vertexNum].latitude = Double.parseDouble(st.nextToken());
-            vertex[vertexNum].longitude = Double.parseDouble(st.nextToken());
-            vertex[vertexNum].id = Integer.parseInt(st.nextToken());
-            vertex[vertexNum].name = st.nextToken();
-            vertexNum++;
-        }
-        input.close();
-    }
 
     private static final double[] DISABLED_PARKING_POINTS = {
             37.635782, 127.076478,   // 성림학사
@@ -156,6 +141,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             37.631247, 127.079555 // 교차로 2 (42)
     };
 
+    private static final int BUILDING_POINTS_SIZE = 40 * 2; // 교차로 제외 건물 수 * (위도 + 경도 = 2)
+
     private static final String[] BUILDING_NAMES = new String[] {
       "미래관", "창학관", "테크노 큐브"
     };
@@ -165,10 +152,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
-        //binding = ActivityMapsBinding.inflate(getLayoutInflater());
-        //setContentView(binding.getRoot());
-
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
@@ -179,7 +162,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         imgbtn_no  = mapFragment.getView().findViewById(R.id.btn_no);
         imgbtn_disabled = mapFragment.getView().findViewById(R.id.btn_disabled);
         imgbtn_smoke = mapFragment.getView().findViewById(R.id.btn_smoke);
-        autotext_building = mapFragment.getView().findViewById(R.id.autotext_building);
+        autotext_building = findViewById(R.id.autotext_building);
+        btn_search = findViewById(R.id.btn_search);
+        layout_slide_up = findViewById(R.id.layout_slide_up);
+        layout_bottom_btns = findViewById(R.id.layout_bottom_btns);
+        layout_slide = findViewById(R.id.layout_slide);
+        layout_slide.setPanelHeight(0);
 
         //어뎁터 할당
         stringadt_building = new ArrayAdapter<String>(mapFragment.getContext(), android.R.layout.simple_dropdown_item_1line, BUILDING_NAMES);
@@ -190,7 +178,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         markers_smoking = new ArrayList<>();
         markers_building = new ArrayList<>();
 
-        // 버튼 클릭 리스너 설정
+        // 클릭 리스너 설정
         imgbtn_no.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -211,17 +199,37 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 ToggleMarkersVisibility(markers_smoking);
             }
         });
-    }
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
+        autotext_building.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                // 자동완성 클릭 시 키보드 숨기기
+                HideKeyboard();
+            }
+        });
+
+        btn_search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String text = autotext_building.getText().toString();
+
+                for(String str : BUILDING_NAMES){
+                    if(str.equals(text)){
+                        HideKeyboard();
+                        layout_slide.setPanelHeight(300);
+                        layout_bottom_btns.setVisibility(View.GONE);
+
+                        // TODO 검색어에 따라서 패널에 정보 추가 하기
+                        
+                        
+                        break;
+                    }
+                }
+
+            }
+        });
+
+    }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -259,7 +267,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         // 건물 마커 설정
-        for(int i = 0; i < BUILDING_POINTS.length; i+=2){
+        for(int i = 0; i < BUILDING_POINTS_SIZE; i+=2){
             markers_building.add(mMap.addMarker(new MarkerOptions().position(new LatLng(BUILDING_POINTS[i], BUILDING_POINTS[i+1]))));
         }
     }
@@ -286,5 +294,39 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         vectorDrawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
         vectorDrawable.draw(canvas);
         return BitmapDescriptorFactory.fromBitmap(bitmap);
+    }
+
+    public static void setVertex() throws IOException{
+        File vertexFile = new File("vertex.txt"); // 한줄씩 위도, 경도, 건물번호, 이름
+
+        // 해당 파일이 없을 경우, 예외처리
+        if (!vertexFile.exists()) {
+            System.out.println("vertex 파일이 존재하지 않습니다.");
+            System.exit(2);
+        }
+
+        Scanner input = new Scanner(vertexFile);
+        int vertexNum = 0;
+
+        // path문서의 인접노드와 거리값을 SpotList에 저장합니다.
+        // 하... vertex class도 get/set 메서드 만들어야하나..
+        while(input.hasNext()){
+            StringTokenizer st = new StringTokenizer(input.nextLine());
+
+            vertex[vertexNum].latitude = Double.parseDouble(st.nextToken());
+            vertex[vertexNum].longitude = Double.parseDouble(st.nextToken());
+            vertex[vertexNum].id = Integer.parseInt(st.nextToken());
+            vertex[vertexNum].name = st.nextToken();
+            vertexNum++;
+        }
+        input.close();
+    }
+
+    private void HideKeyboard(){
+        View view = getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 }
