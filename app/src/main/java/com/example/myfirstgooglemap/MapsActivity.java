@@ -299,7 +299,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public static void setVertex() throws IOException{
         File vertexFile = new File("vertex.txt"); // 한줄씩 위도, 경도, 건물번호, 이름
 
-        // 해당 파일이 없을 경우, 예외처리
+        // 해당 파일이 없을 경우, 예외처리s
         if (!vertexFile.exists()) {
             System.out.println("vertex 파일이 존재하지 않습니다.");
             System.exit(2);
@@ -317,6 +317,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             vertex[vertexNum].longitude = Double.parseDouble(st.nextToken());
             vertex[vertexNum].id = Integer.parseInt(st.nextToken());
             vertex[vertexNum].name = st.nextToken();
+            vertex[vertexNum].name_eng = st.nextToken();
+            vertex[vertexNum].is_smoke = Integer.parseInt(st.nextToken()) == 1;
+            vertex[vertexNum].is_disabled = Integer.parseInt(st.nextToken()) == 1;
+            vertex[vertexNum].is_slope = Integer.parseInt(st.nextToken()) == 1;
+
             vertexNum++;
         }
         input.close();

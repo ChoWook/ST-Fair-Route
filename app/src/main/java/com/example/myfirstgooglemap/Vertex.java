@@ -1,16 +1,29 @@
 package com.example.myfirstgooglemap;
 
+import android.graphics.Bitmap;
+
 public class Vertex {
     double latitude = 0;
     double longitude = 0;
     int id = 0;
     String name = "";
+    String name_eng = "";
+    Boolean is_smoke = false;
+    Boolean is_disabled = false;
+    Boolean is_slope = false;
+    Bitmap[] pictures;
 
-    public Vertex(double lati, double longi, int id, String name) {
+
+    public Vertex(double lati, double longi, int id, String name, String name_eng, Boolean is_smoke, Boolean is_disabled, Boolean is_slope,Bitmap[] pictures) {
         this.latitude = lati;
         this.longitude = longi;
         this.id = id;
         this.name = name;
+        this.name_eng = name_eng;
+        this.is_smoke = is_smoke;
+        this.is_disabled = is_disabled;
+        this.is_slope = is_slope;
+        this.pictures = pictures;
     }
 
     // 위도와 경도를 기준으로 두 지점 간의 거리측정
