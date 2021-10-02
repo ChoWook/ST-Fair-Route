@@ -65,20 +65,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private PolylineOptions polylineOptions = new PolylineOptions();
 
-
-    public int convert(String spot) {
-        int result = -1; // 못 찾았을 경우, -1로 반환합니다.
-
-        // 건물이름으로 찾습니다.
-        for(int i = 0; i < NODE; i++) {
-            if(spot.equals(vertex.get(i).name) | spot.equals(vertex.get(i).name_eng)) {
-                return i;
-            }
-        }
-        return result;
-    }
-
-
     private static final double[] DISABLED_PARKING_POINTS = {
             37.635782, 127.076478,   // 성림학사
             37.635043, 127.076773,  // 어의관
@@ -277,7 +263,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             }
         });
-
+        /*
         img_search.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
@@ -325,10 +311,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             textPn.setTop(pathTf);
             textPn.setLeft(meterTf);
             textPn.setCenter(timeTf);
-             */
+
             }
         });
 
+             */
     }
 
     @Override
@@ -433,5 +420,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
+    }
+
+    public int convert(String spot) {
+        int result = -1; // 못 찾았을 경우, -1로 반환합니다.
+
+        // 건물이름으로 찾습니다.
+        for(int i = 0; i < NODE; i++) {
+            if(spot.equals(vertex.get(i).name) | spot.equals(vertex.get(i).name_eng) | spot.equals(Integer.toString(vertex.get(i).id))) {
+                return i;
+            }
+        }
+        return result;
     }
 }
