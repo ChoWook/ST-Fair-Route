@@ -245,20 +245,35 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View view) {
                 String text = autotext_building.getText().toString();
-
-                for(String str : BUILDING_NAMES){
-                    if(str.equals(text)){
-                        HideKeyboard();
-                        layout_slide.setPanelHeight(400);
-                        layout_bottom_btns.setVisibility(View.GONE);
-
-                        // TODO 검색어에 따라서 패널에 정보 추가 하기
-
-
-                        // TODO 카메라 줌 인
-
-                        break;
+                int index;
+                if((index = convert(text)) != -1){
+                    HideKeyboard();
+                    layout_slide.setPanelHeight(400);
+                    layout_bottom_btns.setVisibility(View.GONE);
+                    text_building_no.setText("No. " + vertex.get(index).id);
+                    text_building_name.setText(vertex.get(index).name);
+                    text_building_name_eng.setText(vertex.get(index).name_eng);
+                    // TODO 검색어에 따라서 패널에 정보 추가 하기 (사진)
+                    //img_building_photo_1.setImageResource(R.drawable.);
+                    if(vertex.get(index).is_smoke){
+                        img_smoke.setImageResource(R.drawable.ic_smoke_color);
                     }
+                    else{
+                        img_smoke.setImageResource(R.drawable.ic_smoke_gray);
+                    }
+                    if(vertex.get(index).is_disabled){
+                        img_disabled.setImageResource(R.drawable.ic_park_color);
+                    }
+                    else{
+                        img_disabled.setImageResource(R.drawable.ic_park_gray);
+                    }
+                    if(vertex.get(index).is_slope){
+                        img_disabled.setImageResource(R.drawable.ic_wheel_color);
+                    }
+                    else{
+                        img_disabled.setImageResource(R.drawable.ic_wheel_gray);
+                    }
+                    // TODO 카메라 줌 인
                 }
 
             }
