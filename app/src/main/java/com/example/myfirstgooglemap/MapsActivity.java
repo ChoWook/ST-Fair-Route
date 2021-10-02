@@ -16,8 +16,10 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -37,14 +39,19 @@ import java.util.*;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
-    private GoogleMap mMap;
-    private LatLng center;
+    // View 선언
     private Button btn_search;
     private ImageButton imgbtn_no, imgbtn_disabled, imgbtn_smoke;
     private RelativeLayout layout_slide_up;
     private LinearLayout layout_bottom_btns;
     private SlidingUpPanelLayout layout_slide;
     private AutoCompleteTextView autotext_building;
+    private TextView text_building_no, text_building_name, text_building_name_eng;
+    private ImageView img_search, img_building_photo_1, img_building_photo_2, img_smoke, img_disabled, img_slope;
+
+    // 변수 선언
+    private GoogleMap mMap;
+    private LatLng center;
     private ArrayAdapter<String> stringadt_building;
     private ArrayList<Marker> markers_disabled, markers_smoking,markers_building;
 
@@ -168,6 +175,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         layout_bottom_btns = findViewById(R.id.layout_bottom_btns);
         layout_slide = findViewById(R.id.layout_slide);
         layout_slide.setPanelHeight(0);
+        text_building_no = findViewById(R.id.bd_number);
+        text_building_name = findViewById(R.id.bd_name);
+        text_building_name_eng = findViewById(R.id.bd_eng_name);
+        img_search = findViewById(R.id.img_search);
+        img_building_photo_1 = findViewById(R.id.bd_photo_1);
+        img_building_photo_2 = findViewById(R.id.bd_photo_2);
+        img_smoke = findViewById(R.id.img_smoke);
+        img_disabled = findViewById(R.id.img_disabled);
+        img_slope = findViewById(R.id.img_slope);
 
         //어뎁터 할당
         stringadt_building = new ArrayAdapter<String>(mapFragment.getContext(), android.R.layout.simple_dropdown_item_1line, BUILDING_NAMES);
@@ -177,6 +193,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         markers_disabled = new ArrayList<>();
         markers_smoking = new ArrayList<>();
         markers_building = new ArrayList<>();
+        
+        // Vertex 초기화
+        try {
+            setVertex();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         // 클릭 리스너 설정
         imgbtn_no.setOnClickListener(new View.OnClickListener() {
@@ -216,7 +239,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 for(String str : BUILDING_NAMES){
                     if(str.equals(text)){
                         HideKeyboard();
-                        layout_slide.setPanelHeight(300);
+                        layout_slide.setPanelHeight(400);
                         layout_bottom_btns.setVisibility(View.GONE);
 
                         // TODO 검색어에 따라서 패널에 정보 추가 하기
@@ -239,6 +262,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.moveCamera(CameraUpdateFactory.newLatLng(center));
         mMap.setMinZoomPreference(16);
         mMap.setMaxZoomPreference(18);
+
 
         // 지도 범위 제한
         LatLngBounds adelaideBounds = new LatLngBounds(
@@ -302,7 +326,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // 해당 파일이 없을 경우, 예외처리s
         if (!vertexFile.exists()) {
             System.out.println("vertex 파일이 존재하지 않습니다.");
-            System.exit(2);
+            //System.exit(2);
+            throw new IOException("vertex 파일이 존재하지 않습니다");
         }
 
         Scanner input = new Scanner(vertexFile);
