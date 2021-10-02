@@ -58,6 +58,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private LatLng center;
     private ArrayAdapter<String> stringadt_building;
     private ArrayList<Marker> markers_disabled, markers_smoking,markers_building;
+    private static final int NODE = 43; // 노드(학교 장소) 갯수
+    private static ArrayList<Vertex> vertex = new ArrayList<>(NODE); // vertex 객체배열
 
     private static final double[] DISABLED_PARKING_POINTS = {
             37.635782, 127.076478,   // 성림학사
@@ -253,9 +255,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
-        final int NODE = 43; // 노드(학교 장소) 갯수
-        ArrayList<Vertex> vertex = new ArrayList<>(NODE); // vertex 객체배열
-
         // 길찾기 버튼 클릭 리스너 추가바람
         img_search.setOnClickListener(new View.OnClickListener(){
             public int convert(String spot) {
@@ -409,14 +408,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         while(input.hasNext()){
             StringTokenizer st = new StringTokenizer(input.nextLine());
 
-            vertex[vertexNum].latitude = Double.parseDouble(st.nextToken());
-            vertex[vertexNum].longitude = Double.parseDouble(st.nextToken());
-            vertex[vertexNum].id = Integer.parseInt(st.nextToken());
-            vertex[vertexNum].name = st.nextToken();
-            vertex[vertexNum].name_eng = st.nextToken();
-            vertex[vertexNum].is_smoke = Integer.parseInt(st.nextToken()) == 1;
-            vertex[vertexNum].is_disabled = Integer.parseInt(st.nextToken()) == 1;
-            vertex[vertexNum].is_slope = Integer.parseInt(st.nextToken()) == 1;
+            vertex.get(vertexNum).latitude = Double.parseDouble(st.nextToken());
+            vertex.get(vertexNum).longitude = Double.parseDouble(st.nextToken());
+            vertex.get(vertexNum).id = Integer.parseInt(st.nextToken());
+            vertex.get(vertexNum).name = st.nextToken();
+            vertex.get(vertexNum).name_eng = st.nextToken();
+            vertex.get(vertexNum).is_smoke = Integer.parseInt(st.nextToken()) == 1;
+            vertex.get(vertexNum).is_disabled = Integer.parseInt(st.nextToken()) == 1;
+            vertex.get(vertexNum).is_slope = Integer.parseInt(st.nextToken()) == 1;
 
             vertexNum++;
         }
