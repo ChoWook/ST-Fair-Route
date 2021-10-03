@@ -47,6 +47,9 @@ public class Daijkstra {
         // 간선정보를 입력할 인접리스트
         ArrayList<Spot>[] SpotList;
         SpotList = new ArrayList[NODE + 1];
+        for(int i = 0; i < NODE + 1; i++){
+            SpotList[i] = new ArrayList<>();
+        }
 
         // 인접리스트 초기화
         for(int i = 1 ; i <= NODE; i++){
