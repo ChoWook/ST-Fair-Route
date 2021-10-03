@@ -425,8 +425,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
         for(int i = 0; i < BUILDING_POINTS_SIZE; i+=2){
             Marker m = mMap.addMarker(new MarkerOptions().position(new LatLng(BUILDING_POINTS[i], BUILDING_POINTS[i+1])));
             m.setIcon(bitmap_building);
-            m.setTag(vertex.get(i/2).id);
-            Log.w("Marker setting", Integer.toString(vertex.get(i/2).id));
+            m.setTag(vertex.get(i/2).name);
         }
 
         mMap.setOnMarkerClickListener(this);
@@ -577,9 +576,9 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
 
     @Override
     public boolean onMarkerClick(final Marker marker) {
-        Integer tag = (Integer) marker.getTag();
+        String tag = (String) marker.getTag();
         if(tag != null){
-            autotext_building.setText(Integer.toString(tag));
+            autotext_building.setText(tag);
             initDisplay();
             DisplayBuildingInfo();
         }
