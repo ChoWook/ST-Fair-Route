@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">MyFirstGoogleMap</string>
+    <string name="app_name">ST Fari Route</string>
     <string name="title_activity_maps">MapsActivity</string>
 </resources>
