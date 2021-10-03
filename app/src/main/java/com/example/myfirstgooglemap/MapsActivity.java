@@ -37,6 +37,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import static java.lang.Boolean.FALSE;
@@ -62,6 +63,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
     private LatLng center;
     private ArrayAdapter<String> stringadt_building;
     private ArrayList<Marker> markers_disabled, markers_smoking,markers_building, markers_slope;
+    private ArrayList<Polyline> polylines;
 
     private static final int NODE = 43; // 노드(학교 장소) 갯수
     private static ArrayList<Vertex> vertex = new ArrayList<>(NODE); // vertex 객체배열
@@ -246,6 +248,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
         markers_building = new ArrayList<>();
         markers_slope = new ArrayList<>();
         vertex = new ArrayList<>();
+        polylines = new ArrayList<>();
 
         // Vertex 초기화
         try {
@@ -316,6 +319,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
                 // 출발지랑 도착지 넣는 텍스트 뷰에서 값 가져오기
                 int start = convert(autotext_building_from.getText().toString()); // 선택한 출발지를 객체배열의 고유번호로 바꿔줍니다.
                 int end = convert(autotext_building_to.getText().toString()); // 선택한 도착지를 객체배열의 고유번호로 바꿔줍니다.
+                initPolylines();
                 if(start == -1 || end == -1) return;
 
                 HideKeyboard();
@@ -334,8 +338,8 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
                     int preVertexNum = Integer.parseInt(pathNode[i-1]);
                     int postVertexNum = Integer.parseInt(pathNode[i]);
                     // polyline 그리는 코드
-                    mMap.addPolyline((new PolylineOptions()).add(new LatLng(vertex.get(preVertexNum).latitude, vertex.get(preVertexNum).longitude),
-                            new LatLng(vertex.get(postVertexNum).latitude, vertex.get(postVertexNum).longitude)).width(5).color(Color.RED));
+                    polylines.add(mMap.addPolyline((new PolylineOptions()).add(new LatLng(vertex.get(preVertexNum).latitude, vertex.get(preVertexNum).longitude),
+                            new LatLng(vertex.get(postVertexNum).latitude, vertex.get(postVertexNum).longitude)).width(5).color(Color.RED)));
                 }
 
                 // 건물 고유숫자로 된 경로를 건물명으로 바꿉니다.
@@ -561,6 +565,13 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
         layout_search_line_2.setVisibility(View.INVISIBLE);
         layout_search_line_3.setVisibility(View.INVISIBLE);
         layout_bottom_btns.setVisibility(View.VISIBLE);
+        initPolylines();
+    }
+
+    public void initPolylines(){
+        for(Polyline p : polylines){
+            p.remove();
+        }
     }
 
     @Override
