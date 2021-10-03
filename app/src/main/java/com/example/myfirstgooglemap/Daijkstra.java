@@ -27,7 +27,9 @@ public class Daijkstra {
     }
 
     // 다익스트라 유일 인스턴스 get Method
-    public static Daijkstra getInstance(){
+    public static Daijkstra getInstance(int start, int end){
+        Singleton.INSTANCE.startNode = start;
+        Singleton.INSTANCE.endNode = end;
         return Singleton.INSTANCE;
     }
 

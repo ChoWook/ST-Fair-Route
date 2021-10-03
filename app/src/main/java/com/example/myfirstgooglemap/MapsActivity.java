@@ -285,7 +285,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 int start = convert(autotext_building.getText().toString()); // 선택한 출발지를 객체배열의 고유번호로 바꿔줍니다.
                 int end = convert(autotext_building.getText().toString()); // 선택한 도착지를 객체배열의 고유번호로 바꿔줍니다.
 
-                Daijkstra path = Daijkstra.getInstance(); // 다익스트라 singleton 객체 Path를 생성합니다.
+                Daijkstra path = Daijkstra.getInstance(start, end); // 다익스트라 singleton 객체 Path를 생성합니다.
 
                 try {
                     setVertex(); // vertex 초기화
