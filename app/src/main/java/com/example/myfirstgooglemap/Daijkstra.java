@@ -1,6 +1,8 @@
 package com.example.myfirstgooglemap;
 import static java.lang.Boolean.TRUE;
 
+import android.content.Context;
+
 import java.io.*;
 import java.util.*;
 
@@ -33,19 +35,14 @@ public class Daijkstra {
         return Singleton.INSTANCE;
     }
 
-    public void calDaijkstra(boolean disabled, ArrayList<Vertex> vertex) throws IOException {
-        // 장애유무에 따라 간선정보를 다르게 입력합니다.
-        File sourceFile;
-        if (disabled == TRUE)
-            sourceFile = new File("/res/raw/edge_disabled.txt");
-        else
-            sourceFile = new File("/res/raw/edge.txt");
+    public void calDaijkstra(Context context, boolean disabled, ArrayList<Vertex> vertex) throws IOException {
 
-        // 해당 파일이 없을 경우, 예외처리
-        if (!sourceFile.exists()) {
-            System.out.println("path 파일이 존재하지 않습니다.");
-            System.exit(2);
-        }
+        // 장애유무에 따라 간선정보를 다르게 입력합니다.
+        InputStream is;
+        if (disabled == TRUE)
+            is = context.getResources().openRawResource(R.raw.edge_disabled);
+        else
+            is = context.getResources().openRawResource(R.raw.edge);
 
         // 간선정보를 입력할 인접리스트
         ArrayList<Spot>[] SpotList;
@@ -56,21 +53,19 @@ public class Daijkstra {
             SpotList[i] = new ArrayList<>();
         }
 
-        Scanner input = new Scanner(sourceFile);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+        String line;
 
-        // path문서의 인접노드와 거리값을 SpotList에 저장합니다.
-        while(input.hasNext()){
-            StringTokenizer st = new StringTokenizer(input.nextLine());
+        while ((line = reader.readLine()) != null) {
+            String[] st = line.split(" ");
 
-            int start = Integer.parseInt(st.nextToken());
-            int end = Integer.parseInt(st.nextToken());
+            int start = Integer.parseInt(st[0]);
+            int end = Integer.parseInt(st[1]);
             int cost = vertex.get(start).calDistance(vertex.get(end));
 
-            // 두 spot간의 거리를 추가합니다.
             SpotList[start].add(new Spot(end, cost));
             SpotList[end].add(new Spot(start, cost));
         }
-        input.close();
 
         // 최단경로를 저장한다.
         dist = new int[NODE + 1];
@@ -91,7 +86,7 @@ public class Daijkstra {
             Spot curSpot = pq.poll();
             int cur = curSpot.end;
 
-            if(check[cur] == true) continue;
+            if(check[cur]) continue;
             check[cur] = true;
 
             for(Spot Spot : SpotList[cur]){

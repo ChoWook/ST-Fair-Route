@@ -284,19 +284,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
-        // 길찾기 버튼 클릭 리스너 추가바람
+
         imgbtn_find_route_daijkstra.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // 출발지랑 도착지 넣는 텍스트 뷰에서 값 가져오기
                 int start = convert(autotext_building_from.getText().toString()); // 선택한 출발지를 객체배열의 고유번호로 바꿔줍니다.
                 int end = convert(autotext_building_to.getText().toString()); // 선택한 도착지를 객체배열의 고유번호로 바꿔줍니다.
+                if(start == -1 || end == -1) return;
 
                 Daijkstra path = Daijkstra.getInstance(start, end); // 다익스트라 singleton 객체 Path를 생성합니다.
 
                 try {
                     setVertex(); // vertex 초기화
-                    path.calDaijkstra(FALSE, vertex); // 경로 계산
+                    path.calDaijkstra(getApplicationContext(),FALSE, vertex); // 경로 계산
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
@@ -427,8 +428,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             BufferedReader reader = new BufferedReader(new InputStreamReader(is));
             String line;
 
-            int vertexNum = 0;
-
             while ((line = reader.readLine()) != null) {
                 String[] st = line.split(" ");
                 st[4] = st[4].replace("_", " ");
@@ -447,7 +446,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         );
                 vertex.add(v);
 
-                vertexNum++;
             }
         } catch (Exception e){
             e.printStackTrace();
