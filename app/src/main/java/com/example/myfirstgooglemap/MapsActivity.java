@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -169,7 +170,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //LatLng 값 할당
         center = new LatLng(37.632503, 127.078933);
 
-        polylineOptions.color(Color.RED);
+        //polylineOptions.color(Color.RED);
 
         // 뷰 할당
         imgbtn_no  = mapFragment.getView().findViewById(R.id.btn_no);
@@ -275,38 +276,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             }
         });
-        /*
-        img_search.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                // 출발지랑 도착지 넣는 텍스트 뷰에서 값 가져오기
-                int start = convert(autotext_building.getText().toString()); // 선택한 출발지를 객체배열의 고유번호로 바꿔줍니다.
-                int end = convert(end???.getText().toString()); // 선택한 도착지를 객체배열의 고유번호로 바꿔줍니다.
-
-                        // TODO 검색어에 따라서 패널에 정보 추가 하기
-                        
-                        
-                        break;
-                    }
-                }
-
-            }
-        });
 
         // 길찾기 버튼 클릭 리스너 추가바람
-        img_search.setOnClickListener(new View.OnClickListener(){
-            public int convert(String spot) {
-                int result = -1; // 못 찾았을 경우, -1로 반환합니다.
-
-                // 건물이름으로 찾습니다.
-                for(int i = 0; i < NODE; i++) {
-                    if(spot.equals(vertex.get(i).name) | spot.equals(vertex.get(i).name_eng)) {
-                        return i;
-                    }
-                }
-                return result;
-            }
-
+        img_search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // 출발지랑 도착지 넣는 텍스트 뷰에서 값 가져오기
@@ -324,18 +296,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 String[] pathNode = path.getPathNode().split(" ", 0); // 계산된 경로(String)을 연산을 위해 배열로 만듭니다.
 
                 // 캠퍼스지도상에 그릴 polyLine객체를 pathNode를 토대로 생성합니다.
-                for(int i = 1; i < pathNode.length; i++) {
+                for (int i = 1; i < pathNode.length; i++) {
                     int vertexNum = Integer.parseInt(pathNode[i]);
                     // polyline 그리는 코드
-                    mMap.addPolyline((new PolylineOptions()).add(new LatLng(vertex.get(vertexNum-1).latitude, vertex.get(vertexNum-1).longitude),
+                    mMap.addPolyline((new PolylineOptions()).add(new LatLng(vertex.get(vertexNum - 1).latitude, vertex.get(vertexNum - 1).longitude),
                             new LatLng(vertex.get(vertexNum).latitude, vertex.get(vertexNum).longitude)).width(5).color(Color.RED).geodesic(TRUE));
                 }
 
                 // 건물 고유숫자로 된 경로를 건물명으로 바꿉니다.
                 String pathInfo = "";
-                for(int i = 0; i < pathNode.length; i++) {
+                for (int i = 0; i < pathNode.length; i++) {
                     pathInfo += vertex.get(Integer.parseInt(pathNode[i])).name;
-                    if(i == pathNode.length-1)
+                    if (i == pathNode.length - 1)
                         break;
                     pathInfo += " -> ";
                 }
@@ -359,8 +331,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
              */
             }
         });
-
     }
+
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -456,7 +428,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             e.printStackTrace();
             Toast.makeText(getApplicationContext(),e.toString(),Toast.LENGTH_LONG).show();
         }
-        input.close();
     }
 
     private void HideKeyboard(){
