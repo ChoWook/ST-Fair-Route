@@ -10,11 +10,13 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -39,7 +41,7 @@ import static java.lang.Boolean.FALSE;
 import java.util.ArrayList;
 import java.io.*;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarkerClickListener,OnMapReadyCallback {
 
     // View 선언
     private ImageButton imgbtn_slope, imgbtn_disabled, imgbtn_smoke, imgbtn_find_route, imgbtn_search, imgbtn_find_route_daijkstra;
@@ -49,6 +51,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private AutoCompleteTextView autotext_building, autotext_building_from, autotext_building_to;
     private TextView text_building_no, text_building_name, text_building_name_eng;
     private ImageView img_search, img_building_photo_1, img_building_photo_2, img_smoke, img_disabled, img_slope;
+    private CheckBox Ckbox_stair;
 
     // 변수 선언
     private GoogleMap mMap;
@@ -220,6 +223,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         layout_search_line_1 = findViewById(R.id.search_line_1);
         layout_search_line_2 = findViewById(R.id.search_line_2);
         layout_search_line_2.setVisibility(View.INVISIBLE);
+        Ckbox_stair = findViewById(R.id.Ckbox_stair);
 
         //어뎁터 할당
         stringadt_building = new ArrayAdapter<String>(mapFragment.getContext(), android.R.layout.simple_dropdown_item_1line, BUILDING_NAMES);
@@ -292,45 +296,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         imgbtn_search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String text = autotext_building.getText().toString();
-                int index;
-                Context context = getApplicationContext();
-                if((index = convert(text)) != -1){
-                    HideKeyboard();
-                    layout_slide.setPanelHeight(400);
-
-                    // vertex 에서 정보를 가져와 View 값 변경
-                    layout_bottom_btns.setVisibility(View.GONE);
-                    text_building_no.setText("No. " + vertex.get(index).id);
-                    text_building_name.setText(vertex.get(index).name);
-                    text_building_name_eng.setText(vertex.get(index).name_eng);
-                    int id = context.getResources().getIdentifier("photo_"+vertex.get(index).id + "_1", "drawable", context.getPackageName());
-                    img_building_photo_1.setImageResource(id);
-                    id = context.getResources().getIdentifier("photo_"+vertex.get(index).id + "_2", "drawable", context.getPackageName());
-                    img_building_photo_2.setImageResource(id);
-                    if(vertex.get(index).is_smoke){
-                        img_smoke.setImageResource(R.drawable.ic_smoke_color);
-                    }
-                    else{
-                        img_smoke.setImageResource(R.drawable.ic_smoke_gray);
-                    }
-                    if(vertex.get(index).is_disabled){
-                        img_disabled.setImageResource(R.drawable.ic_park_color);
-                    }
-                    else{
-                        img_disabled.setImageResource(R.drawable.ic_park_gray);
-                    }
-                    if(vertex.get(index).is_slope){
-                        img_disabled.setImageResource(R.drawable.ic_wheel_color);
-                    }
-                    else{
-                        img_disabled.setImageResource(R.drawable.ic_wheel_gray);
-                    }
-                    
-                    // 카메라 줌 인
-                    mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(vertex.get(index).latitude,  vertex.get(index).longitude)));
-                }
-
+                DisplayBuildingInfo();
             }
         });
 
@@ -343,11 +309,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 int end = convert(autotext_building_to.getText().toString()); // 선택한 도착지를 객체배열의 고유번호로 바꿔줍니다.
                 if(start == -1 || end == -1) return;
 
+                HideKeyboard();
                 Daijkstra path = Daijkstra.getInstance(start, end); // 다익스트라 singleton 객체 Path를 생성합니다.
 
                 try {
                     setVertex(); // vertex 초기화
-                    path.calDaijkstra(getApplicationContext(),FALSE, vertex); // 경로 계산
+                    path.calDaijkstra(getApplicationContext(), !Ckbox_stair.isChecked(), vertex); // 경로 계산
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
@@ -355,10 +322,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 // 캠퍼스지도상에 그릴 polyLine객체를 pathNode를 토대로 생성합니다.
                 for (int i = 1; i < pathNode.length; i++) {
-                    int vertexNum = Integer.parseInt(pathNode[i]);
+                    int preVertexNum = Integer.parseInt(pathNode[i-1]);
+                    int postVertexNum = Integer.parseInt(pathNode[i]);
                     // polyline 그리는 코드
-                    mMap.addPolyline((new PolylineOptions()).add(new LatLng(vertex.get(vertexNum - 1).latitude, vertex.get(vertexNum - 1).longitude),
-                            new LatLng(vertex.get(vertexNum).latitude, vertex.get(vertexNum).longitude)).width(5).color(Color.RED));
+                    mMap.addPolyline((new PolylineOptions()).add(new LatLng(vertex.get(preVertexNum).latitude, vertex.get(preVertexNum).longitude),
+                            new LatLng(vertex.get(postVertexNum).latitude, vertex.get(postVertexNum).longitude)).width(5).color(Color.RED));
                 }
 
                 // 건물 고유숫자로 된 경로를 건물명으로 바꿉니다.
@@ -403,6 +371,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 ClickFindRouteBtn();
             }
         });
+
     }
 
 
@@ -452,9 +421,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         // 건물 마커 설정
+        BitmapDescriptor bitmap_building = GetBitmapDescriptor(R.drawable.ic_mark_building, 60);
         for(int i = 0; i < BUILDING_POINTS_SIZE; i+=2){
-            markers_building.add(mMap.addMarker(new MarkerOptions().position(new LatLng(BUILDING_POINTS[i], BUILDING_POINTS[i+1]))));
+            Marker m = mMap.addMarker(new MarkerOptions().position(new LatLng(BUILDING_POINTS[i], BUILDING_POINTS[i+1])));
+            m.setIcon(bitmap_building);
+            m.setTag(vertex.get(i/2).id);
+            Log.w("Marker setting", Integer.toString(vertex.get(i/2).id));
         }
+
+        mMap.setOnMarkerClickListener(this);
     }
 
     private void ToggleMarkersVisibility(ArrayList<Marker> markers){
@@ -540,4 +515,76 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         autotext_building_to.setText(autotext_building.getText());
         autotext_building.setText("");
     }
+
+    private void DisplayBuildingInfo(){
+        String text = autotext_building.getText().toString();
+        int index;
+        Context context = getApplicationContext();
+        if((index = convert(text)) != -1){
+            HideKeyboard();
+            layout_slide.setPanelHeight(400);
+
+            // vertex 에서 정보를 가져와 View 값 변경
+            layout_bottom_btns.setVisibility(View.GONE);
+            text_building_no.setText("No. " + vertex.get(index).id);
+            text_building_name.setText(vertex.get(index).name);
+            text_building_name_eng.setText(vertex.get(index).name_eng);
+            int id = context.getResources().getIdentifier("photo_"+vertex.get(index).id + "_1", "drawable", context.getPackageName());
+            img_building_photo_1.setImageResource(id);
+            id = context.getResources().getIdentifier("photo_"+vertex.get(index).id + "_2", "drawable", context.getPackageName());
+            img_building_photo_2.setImageResource(id);
+            if(vertex.get(index).is_smoke){
+                img_smoke.setImageResource(R.drawable.ic_smoke_color);
+            }
+            else{
+                img_smoke.setImageResource(R.drawable.ic_smoke_gray);
+            }
+            if(vertex.get(index).is_disabled){
+                img_disabled.setImageResource(R.drawable.ic_park_color);
+            }
+            else{
+                img_disabled.setImageResource(R.drawable.ic_park_gray);
+            }
+            if(vertex.get(index).is_slope){
+                img_disabled.setImageResource(R.drawable.ic_wheel_color);
+            }
+            else{
+                img_disabled.setImageResource(R.drawable.ic_wheel_gray);
+            }
+
+            // 카메라 줌 인
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(vertex.get(index).latitude,  vertex.get(index).longitude)));
+        }
+    }
+
+    public void initDisplay(){
+        HideKeyboard();
+        layout_slide.setPanelHeight(0);
+        layout_search_line_1.setVisibility(View.VISIBLE);
+        layout_search_line_2.setVisibility(View.INVISIBLE);
+        layout_bottom_btns.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(layout_slide.getPanelHeight() != 0 || layout_search_line_2.getVisibility() == View.VISIBLE){
+            initDisplay();
+        }
+        else{
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean onMarkerClick(final Marker marker) {
+        Integer tag = (Integer) marker.getTag();
+        if(tag != null){
+            autotext_building.setText(Integer.toString(tag));
+            initDisplay();
+            DisplayBuildingInfo();
+        }
+
+        return false;
+    }
+
 }
