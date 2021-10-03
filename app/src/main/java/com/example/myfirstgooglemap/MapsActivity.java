@@ -15,7 +15,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -40,17 +39,15 @@ import static java.lang.Boolean.TRUE;
 
 import java.util.ArrayList;
 import java.io.*;
-import java.util.*;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     // View 선언
-    private Button btn_search;
-    private ImageButton imgbtn_no, imgbtn_disabled, imgbtn_smoke;
+    private ImageButton imgbtn_no, imgbtn_disabled, imgbtn_smoke, imgbtn_find_route, imgbtn_search, imgbtn_find_route_daijkstra;
     private RelativeLayout layout_slide_up;
-    private LinearLayout layout_bottom_btns;
+    private LinearLayout layout_bottom_btns, layout_search_line_1, layout_search_line_2;
     private SlidingUpPanelLayout layout_slide;
-    private AutoCompleteTextView autotext_building;
+    private AutoCompleteTextView autotext_building, autotext_building_from, autotext_building_to;
     private TextView text_building_no, text_building_name, text_building_name_eng;
     private ImageView img_search, img_building_photo_1, img_building_photo_2, img_smoke, img_disabled, img_slope;
 
@@ -155,9 +152,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private static final int BUILDING_POINTS_SIZE = 40 * 2; // 교차로 제외 건물 수 * (위도 + 경도 = 2)
 
-    private static final String[] BUILDING_NAMES = new String[] {
-      "미래관", "창학관", "테크노 큐브"
-    };
+    private static ArrayList<String> BUILDING_NAMES = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -176,8 +171,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         imgbtn_no  = mapFragment.getView().findViewById(R.id.btn_no);
         imgbtn_disabled = mapFragment.getView().findViewById(R.id.btn_disabled);
         imgbtn_smoke = mapFragment.getView().findViewById(R.id.btn_smoke);
+        imgbtn_find_route = findViewById(R.id.btn_find_route);
+        imgbtn_find_route_daijkstra = findViewById(R.id.btn_find_route_daijkstra);
         autotext_building = findViewById(R.id.autotext_building);
-        btn_search = findViewById(R.id.btn_search);
+        autotext_building_from = findViewById(R.id.autotext_building_from);
+        autotext_building_to = findViewById(R.id.autotext_building_to);
+        imgbtn_search = findViewById(R.id.btn_search);
         layout_slide_up = findViewById(R.id.layout_slide_up);
         layout_bottom_btns = findViewById(R.id.layout_bottom_btns);
         layout_slide = findViewById(R.id.layout_slide);
@@ -191,10 +190,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         img_smoke = findViewById(R.id.img_smoke);
         img_disabled = findViewById(R.id.img_disabled);
         img_slope = findViewById(R.id.img_slope);
+        layout_search_line_1 = findViewById(R.id.search_line_1);
+        layout_search_line_2 = findViewById(R.id.search_line_2);
+        layout_search_line_2.setVisibility(View.INVISIBLE);
 
         //어뎁터 할당
         stringadt_building = new ArrayAdapter<String>(mapFragment.getContext(), android.R.layout.simple_dropdown_item_1line, BUILDING_NAMES);
         autotext_building.setAdapter(stringadt_building);
+        autotext_building_from.setAdapter(stringadt_building);
+        autotext_building_to.setAdapter(stringadt_building);
 
         // 리스트 초기화
         markers_disabled = new ArrayList<>();
@@ -239,11 +243,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
-        btn_search.setOnClickListener(new View.OnClickListener() {
+        imgbtn_search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String text = autotext_building.getText().toString();
                 int index;
+                Context context = getApplicationContext();
                 if((index = convert(text)) != -1){
                     HideKeyboard();
                     layout_slide.setPanelHeight(400);
@@ -251,8 +256,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     text_building_no.setText("No. " + vertex.get(index).id);
                     text_building_name.setText(vertex.get(index).name);
                     text_building_name_eng.setText(vertex.get(index).name_eng);
-                    // TODO 검색어에 따라서 패널에 정보 추가 하기 (사진)
-                    //img_building_photo_1.setImageResource(R.drawable.);
+                    int id = context.getResources().getIdentifier("photo_"+vertex.get(index).id + "_1", "drawable", context.getPackageName());
+                    img_building_photo_1.setImageResource(id);
+                    id = context.getResources().getIdentifier("photo_"+vertex.get(index).id + "_2", "drawable", context.getPackageName());
+                    img_building_photo_2.setImageResource(id);
                     if(vertex.get(index).is_smoke){
                         img_smoke.setImageResource(R.drawable.ic_smoke_color);
                     }
@@ -278,12 +285,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
 
         // 길찾기 버튼 클릭 리스너 추가바람
-        img_search.setOnClickListener(new View.OnClickListener() {
+        imgbtn_find_route_daijkstra.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // 출발지랑 도착지 넣는 텍스트 뷰에서 값 가져오기
-                int start = convert(autotext_building.getText().toString()); // 선택한 출발지를 객체배열의 고유번호로 바꿔줍니다.
-                int end = convert(autotext_building.getText().toString()); // 선택한 도착지를 객체배열의 고유번호로 바꿔줍니다.
+                int start = convert(autotext_building_from.getText().toString()); // 선택한 출발지를 객체배열의 고유번호로 바꿔줍니다.
+                int end = convert(autotext_building_to.getText().toString()); // 선택한 도착지를 객체배열의 고유번호로 바꿔줍니다.
 
                 Daijkstra path = Daijkstra.getInstance(start, end); // 다익스트라 singleton 객체 Path를 생성합니다.
 
@@ -329,6 +336,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             textPn.setLeft(meterTf);
             textPn.setCenter(timeTf);
              */
+            }
+        });
+
+        imgbtn_find_route.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ClickFindRouteBtn();
+            }
+        });
+
+        img_search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ClickFindRouteBtn();
             }
         });
     }
@@ -410,6 +431,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             while ((line = reader.readLine()) != null) {
                 String[] st = line.split(" ");
+                st[4] = st[4].replace("_", " ");
+                for(int i = 2; i < 5; i++){
+                    BUILDING_NAMES.add(st[i]);
+                }
 
                 Vertex v = new Vertex(Double.parseDouble(st[0]),
                         Double.parseDouble(st[1]),
@@ -448,5 +473,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
         return result;
+    }
+
+    private void ClickFindRouteBtn(){
+        HideKeyboard();
+        layout_slide.setPanelHeight(0);
+        layout_search_line_1.setVisibility(View.INVISIBLE);
+        layout_search_line_2.setVisibility(View.VISIBLE);
+        autotext_building_to.setText(autotext_building.getText());
+        autotext_building.setText("");
     }
 }

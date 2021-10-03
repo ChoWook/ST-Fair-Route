@@ -18,8 +18,7 @@
             android:layout_height="match_parent"
             >
 
-            <fragment
-                xmlns:map="http://schemas.android.com/apk/res-auto"
+            <fragment xmlns:map="http://schemas.androidgit bcom/apk/res-auto"
 
                 android:id="@+id/map"
                 android:name="com.google.android.gms.maps.SupportMapFragment"
@@ -32,39 +31,36 @@
                     android:layout_height="match_parent">
 
 
-
                     <LinearLayout
                         android:id="@+id/layout_bottom_btns"
-                        android:layout_alignParentBottom="true"
-                        android:layout_height="50dp"
                         android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:layout_alignParentBottom="true"
                         android:orientation="horizontal">
 
                         <ImageButton
                             android:id="@+id/btn_no"
-                            android:layout_height="80dp"
                             android:layout_width="0dp"
+                            android:layout_height="56dp"
                             android:layout_weight="1"
-                            android:src="@drawable/ic_mark_wheel"
-                            />
+                            android:src="@drawable/btn_smoke_gray" />
 
                         <ImageButton
                             android:id="@+id/btn_disabled"
-                            android:layout_height="80dp"
                             android:layout_width="0dp"
+                            android:layout_height="56dp"
                             android:layout_weight="1"
-                            android:src="@drawable/ic_mark_parking"
-                            />
+                            android:src="@drawable/btn_park_color" />
 
                         <ImageButton
                             android:id="@+id/btn_smoke"
-                            android:layout_height="80dp"
                             android:layout_width="0dp"
+                            android:layout_height="56dp"
                             android:layout_weight="1"
-                            android:src="@drawable/ic_mark_smoking"
-                            />
+                            android:src="@drawable/btn_wheel_gray" />
 
                     </LinearLayout>
+
 
                 </RelativeLayout>
 
@@ -249,26 +245,194 @@
 
 
     <LinearLayout
+        android:id="@+id/search_line_1"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
         >
 
-        <AutoCompleteTextView
-            android:id="@+id/autotext_building"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="4"
-            android:background="#606060"
-            />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:background="@drawable/round_search"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="30dp"
+            android:orientation="horizontal">
+            <AutoCompleteTextView
+                android:id="@+id/autotext_building"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:textSize="13sp"
+                android:layout_gravity="center_vertical"
+                android:hint="건물 번호, 건물 이름 검색"
+                android:paddingLeft="15dp"
+                android:textColor="@color/black"
+                />
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
 
-        <Button
-            android:id="@+id/btn_search"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="검색"
-            />
+
+            <ImageButton
+                android:id="@+id/btn_search"
+                android:layout_width="26dp"
+                android:layout_height="56dp"
+                android:background="@color/white"
+                android:layout_marginRight="10dp"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/ic_search_gray" />
+
+            <ImageButton
+                android:id="@+id/btn_find_route"
+                android:layout_width="26dp"
+                android:layout_height="56dp"
+                android:background="@color/white"
+                android:layout_marginRight="15dp"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/ic_btn_find_route_mini" />
+
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+    <!--길찾기 검색-->
+    <LinearLayout
+        android:id="@+id/search_line_2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="90dp"
+            android:background="@drawable/round_search"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="30dp"
+            android:orientation="horizontal">
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="0.3"
+                android:layout_height="90dp"
+                android:gravity="center_horizontal|center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="19dp"
+                    android:layout_height="19dp"
+                    android:src="@drawable/ic_starter"
+                    />
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="4dp"
+                    android:layout_marginTop="4dp"
+                    android:background="@color/text_gray"/>
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="4dp"
+                    android:layout_marginTop="4dp"
+                    android:background="@color/text_gray"/>
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="4dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp"
+                    android:background="@color/text_gray"/>
+
+                <ImageView
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:src="@drawable/ic_destination"
+                    />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="92dp"
+                android:orientation="vertical">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp">
+                    <TextView
+                        android:layout_width="45dp"
+                        android:layout_height="wrap_content"
+                        android:text="From"
+                        android:textSize="13sp"
+                        android:textColor="@color/text_gray"
+                        android:layout_gravity="center_vertical"
+                        />
+                    <AutoCompleteTextView
+                        android:id="@+id/autotext_building_from"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:textSize="13sp"
+                        android:layout_gravity="center_vertical"
+                        android:hint="건물 번호, 건물 이름 검색"
+                        android:textColor="@color/black"
+                        />
+                </LinearLayout>
+
+                <View style="@style/Divider" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp">
+                    <TextView
+                        android:layout_width="45dp"
+                        android:layout_height="wrap_content"
+                        android:text="To"
+                        android:textSize="13sp"
+                        android:textColor="@color/text_gray"
+                        android:layout_gravity="center_vertical"
+                        />
+                    <AutoCompleteTextView
+                        android:id="@+id/autotext_building_to"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:textSize="13sp"
+                        android:layout_gravity="center_vertical"
+                        android:hint="건물 번호, 건물 이름 검색"
+                        android:textColor="@color/black"
+                        />
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="0.6"
+                android:layout_height="90dp"
+                android:gravity="center_horizontal|center_vertical"
+                android:orientation="vertical">
+                <ImageButton
+                    android:id="@+id/btn_find_route_daijkstra"
+                    android:layout_width="32dp"
+                    android:layout_height="29dp"
+                    android:background="@color/white"
+                    android:src="@drawable/ic_find_route_null" />
+                <TextView
+                    android:id="@+id/txt_pf_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="길찾기"
+                    android:textSize="11sp"
+                    android:textColor="@color/navy"
+                    android:layout_marginTop="5dp"
+                    />
+            </LinearLayout>
+
+        </LinearLayout>
 
     </LinearLayout>
 
