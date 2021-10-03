@@ -220,9 +220,6 @@
 
                 </LinearLayout>
 
-
-
-
                 <Button
                     android:id="@+id/btn_call"
                     android:layout_width="match_parent"
@@ -292,7 +289,7 @@
                 android:background="@color/white"
                 android:layout_marginRight="15dp"
                 android:layout_gravity="center_vertical"
-                android:src="@drawable/ic_btn_find_route_mini" />
+                android:src="@drawable/ic_destination_mini" />
 
 
         </LinearLayout>
@@ -452,6 +449,47 @@
 
         </LinearLayout>
 
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/search_line_3"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center_vertical"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="135dp"
+        android:background="@drawable/round_search"
+        android:orientation="horizontal">
+        <ImageView
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:src="@drawable/ic_walk"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="5dp"
+            />
+        <TextView
+            android:id="@+id/text_meter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="9sp"
+            android:textColor="@color/dark_black"
+            android:layout_marginRight="15dp"
+            android:text="830m"/>
+        <ImageView
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_marginRight="5dp"
+            android:src="@drawable/ic_destination_mini"
+            />
+        <TextView
+            android:id="@+id/text_path"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="9sp"
+            android:textColor="@color/dark_black"
+            android:layout_marginRight="15dp"
+            android:text="다빈치관 → 붕어방 →  혜성관 → 무궁관 → 미래관 → 붕어방 →  혜성관 → 무궁관 → 미래관"/>
     </LinearLayout>
 
 </RelativeLayout>

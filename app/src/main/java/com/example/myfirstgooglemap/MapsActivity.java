@@ -5,10 +5,12 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -16,6 +18,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -44,12 +47,13 @@ import java.io.*;
 public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarkerClickListener,OnMapReadyCallback {
 
     // View 선언
+    private Button btn_call;
     private ImageButton imgbtn_slope, imgbtn_disabled, imgbtn_smoke, imgbtn_find_route, imgbtn_search, imgbtn_find_route_daijkstra;
     private RelativeLayout layout_slide_up;
-    private LinearLayout layout_bottom_btns, layout_search_line_1, layout_search_line_2;
+    private LinearLayout layout_bottom_btns, layout_search_line_1, layout_search_line_2, layout_search_line_3;
     private SlidingUpPanelLayout layout_slide;
     private AutoCompleteTextView autotext_building, autotext_building_from, autotext_building_to;
-    private TextView text_building_no, text_building_name, text_building_name_eng;
+    private TextView text_building_no, text_building_name, text_building_name_eng, text_path, text_meter;
     private ImageView img_search, img_building_photo_1, img_building_photo_2, img_smoke, img_disabled, img_slope;
     private CheckBox Ckbox_stair;
 
@@ -198,6 +202,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
         //polylineOptions.color(Color.RED);
 
         // 뷰 할당
+        btn_call = findViewById(R.id.btn_call);
         imgbtn_slope = mapFragment.getView().findViewById(R.id.btn_wheel);
         imgbtn_disabled = mapFragment.getView().findViewById(R.id.btn_disabled);
         imgbtn_smoke = mapFragment.getView().findViewById(R.id.btn_smoke);
@@ -214,6 +219,8 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
         text_building_no = findViewById(R.id.bd_number);
         text_building_name = findViewById(R.id.bd_name);
         text_building_name_eng = findViewById(R.id.bd_eng_name);
+        text_meter = findViewById(R.id.text_meter);
+        text_path = findViewById(R.id.text_path);
         img_search = findViewById(R.id.img_search);
         img_building_photo_1 = findViewById(R.id.bd_photo_1);
         img_building_photo_2 = findViewById(R.id.bd_photo_2);
@@ -223,6 +230,8 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
         layout_search_line_1 = findViewById(R.id.search_line_1);
         layout_search_line_2 = findViewById(R.id.search_line_2);
         layout_search_line_2.setVisibility(View.INVISIBLE);
+        layout_search_line_3 = findViewById(R.id.search_line_3);
+        layout_search_line_3.setVisibility(View.INVISIBLE);
         Ckbox_stair = findViewById(R.id.Ckbox_stair);
 
         //어뎁터 할당
@@ -338,23 +347,10 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
                     pathInfo += " -> ";
                 }
 
+                text_path.setText(pathInfo); // 경로 표시
+                text_meter.setText(path.getMeter() + "m"); // 거리 표시
 
-            /* 있으면 좋을듯한 추가기능
-            int minute = path.getTime() / 60;
-            int second = path.getTime() % 60;
-
-            pathTf.setText("경로 : " + pathInfo + " (총 " + path.getNodeCount() + "곳 지남)"); // 경로 표시
-            meterTf.setText("거리 : " + path.getMeter() + "m"); // 거리 표시
-            timeTf.setText("예상 소요시간 : " + minute + "분 " + second + "초"); //
-            BorderPane textPn = new BorderPane();
-            pathTf.setPrefWidth(700);
-            meterTf.setPrefWidth(100);
-            timeTf.setPrefWidth(200);
-
-            textPn.setTop(pathTf);
-            textPn.setLeft(meterTf);
-            textPn.setCenter(timeTf);
-             */
+                layout_search_line_3.setVisibility(View.VISIBLE);
             }
         });
 
@@ -371,7 +367,6 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
                 ClickFindRouteBtn();
             }
         });
-
     }
 
 
@@ -475,7 +470,8 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
                         st[4],
                         Integer.parseInt(st[5]) == 1,
                         Integer.parseInt(st[6]) == 1,
-                        Integer.parseInt(st[7]) == 1
+                        Integer.parseInt(st[7]) == 1,
+                        st[8]
                         );
                 vertex.add(v);
 
@@ -550,6 +546,8 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
             else{
                 img_slope.setImageResource(R.drawable.ic_wheel_gray);
             }
+            btn_call.setText(vertex.get(index).call);
+
 
             // 카메라 줌 인
             mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(vertex.get(index).latitude,  vertex.get(index).longitude)));
@@ -561,6 +559,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
         layout_slide.setPanelHeight(0);
         layout_search_line_1.setVisibility(View.VISIBLE);
         layout_search_line_2.setVisibility(View.INVISIBLE);
+        layout_search_line_3.setVisibility(View.INVISIBLE);
         layout_bottom_btns.setVisibility(View.VISIBLE);
     }
 
