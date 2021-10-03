@@ -35,7 +35,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import static java.lang.Boolean.FALSE;
-import static java.lang.Boolean.TRUE;
 
 import java.util.ArrayList;
 import java.io.*;
@@ -43,7 +42,7 @@ import java.io.*;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     // View 선언
-    private ImageButton imgbtn_no, imgbtn_disabled, imgbtn_smoke, imgbtn_find_route, imgbtn_search, imgbtn_find_route_daijkstra;
+    private ImageButton imgbtn_slope, imgbtn_disabled, imgbtn_smoke, imgbtn_find_route, imgbtn_search, imgbtn_find_route_daijkstra;
     private RelativeLayout layout_slide_up;
     private LinearLayout layout_bottom_btns, layout_search_line_1, layout_search_line_2;
     private SlidingUpPanelLayout layout_slide;
@@ -55,10 +54,38 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private LatLng center;
     private ArrayAdapter<String> stringadt_building;
-    private ArrayList<Marker> markers_disabled, markers_smoking,markers_building;
+    private ArrayList<Marker> markers_disabled, markers_smoking,markers_building, markers_slope;
 
     private static final int NODE = 43; // 노드(학교 장소) 갯수
     private static ArrayList<Vertex> vertex = new ArrayList<>(NODE); // vertex 객체배열
+
+    private static final double[] SLOPE_POINTS = {
+            37.628640, 127.081260,  // 학군단
+            37.629383, 127.081671,  // 미래관
+            37.631543, 127.082077,  // 혜성관
+            37.631573, 127.081007,  // 제2창업보육센터
+            37.631646, 127.080338,  // 대학본부 1
+            37.631708, 127.080088,  // 대학본부 2
+            37.632142, 127.079232,  // 창학관
+            37.634287, 127.080421,  // 테크노파크
+            37.634662, 127.079378,  // 창조관
+            37.635203, 127.079022,  // 도예관
+            37.636195, 127.076091,  // 불암학사
+            37.636000, 127.076214,  // KB 1
+            37.636068, 127.075887,  // kB 2
+            37.635173, 127.076778,  // 어의관
+            37.634795, 127.077352,  // 어학원
+            37.634025, 127.076964,  // 1학
+            37.633551, 127.076873,  // 도서관 별관
+            37.633259, 127.076691,  // 도서관
+            37.631255, 127.076059,  // 프론티어관
+            37.630850, 127.078876,  // 100주년 기념관
+            37.630828, 127.079517,  // 2학생회관
+            37.629654, 127.080230,  // 아름관
+            37.629409, 127.079404,  // 체육관
+            37.629217, 127.080281,  // 대륙관 1
+            37.629190, 127.080429   // 대륙관 2
+    };
 
     private static final double[] DISABLED_PARKING_POINTS = {
             37.635782, 127.076478,   // 성림학사
@@ -168,7 +195,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //polylineOptions.color(Color.RED);
 
         // 뷰 할당
-        imgbtn_no  = mapFragment.getView().findViewById(R.id.btn_no);
+        imgbtn_slope = mapFragment.getView().findViewById(R.id.btn_wheel);
         imgbtn_disabled = mapFragment.getView().findViewById(R.id.btn_disabled);
         imgbtn_smoke = mapFragment.getView().findViewById(R.id.btn_smoke);
         imgbtn_find_route = findViewById(R.id.btn_find_route);
@@ -204,6 +231,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         markers_disabled = new ArrayList<>();
         markers_smoking = new ArrayList<>();
         markers_building = new ArrayList<>();
+        markers_slope = new ArrayList<>();
         vertex = new ArrayList<>();
 
         // Vertex 초기화
@@ -214,10 +242,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         // 클릭 리스너 설정
-        imgbtn_no.setOnClickListener(new View.OnClickListener() {
+        imgbtn_slope.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                
+                ToggleMarkersVisibility(markers_slope);
+                if(markers_slope.get(0).isVisible()){
+                    imgbtn_slope.setImageResource(R.drawable.btn_park_color);
+                }
+                else{
+                    imgbtn_slope.setImageResource(R.drawable.btn_park_gray);
+                }
             }
         });
         
@@ -225,6 +259,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View view) {
                 ToggleMarkersVisibility(markers_disabled);
+                if(markers_disabled.get(0).isVisible()){
+                    imgbtn_disabled.setImageResource(R.drawable.btn_park_color);
+                }
+                else{
+                    imgbtn_disabled.setImageResource(R.drawable.btn_park_gray);
+                }
             }
         });
 
@@ -232,6 +272,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View view) {
                 ToggleMarkersVisibility(markers_smoking);
+                if(markers_smoking.get(0).isVisible()){
+                    imgbtn_smoke.setImageResource(R.drawable.btn_smoke_color);
+                }
+                else{
+                    imgbtn_smoke.setImageResource(R.drawable.btn_smoke_gray);
+                }
             }
         });
 
@@ -252,6 +298,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 if((index = convert(text)) != -1){
                     HideKeyboard();
                     layout_slide.setPanelHeight(400);
+
+                    // vertex 에서 정보를 가져와 View 값 변경
                     layout_bottom_btns.setVisibility(View.GONE);
                     text_building_no.setText("No. " + vertex.get(index).id);
                     text_building_name.setText(vertex.get(index).name);
@@ -278,7 +326,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     else{
                         img_disabled.setImageResource(R.drawable.ic_wheel_gray);
                     }
-                    // TODO 카메라 줌 인
+                    
+                    // 카메라 줌 인
+                    mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(vertex.get(index).latitude,  vertex.get(index).longitude)));
                 }
 
             }
@@ -308,7 +358,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     int vertexNum = Integer.parseInt(pathNode[i]);
                     // polyline 그리는 코드
                     mMap.addPolyline((new PolylineOptions()).add(new LatLng(vertex.get(vertexNum - 1).latitude, vertex.get(vertexNum - 1).longitude),
-                            new LatLng(vertex.get(vertexNum).latitude, vertex.get(vertexNum).longitude)).width(5).color(Color.RED).geodesic(TRUE));
+                            new LatLng(vertex.get(vertexNum).latitude, vertex.get(vertexNum).longitude)).width(5).color(Color.RED));
                 }
 
                 // 건물 고유숫자로 된 경로를 건물명으로 바꿉니다.
@@ -390,6 +440,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             m.setIcon(bitmap_smoking);
             m.setVisible(false);
             markers_smoking.add(m);
+        }
+
+        // 경사로 마커 설정
+        BitmapDescriptor bitmap_slope = GetBitmapDescriptor(R.drawable.ic_mark_wheel, 70);
+        for(int i = 0; i < SLOPE_POINTS.length; i+=2){
+            Marker m = mMap.addMarker(new MarkerOptions().position(new LatLng(SLOPE_POINTS[i], SLOPE_POINTS[i+1])));
+            m.setIcon(bitmap_slope);
+            m.setVisible(false);
+            markers_slope.add(m);
         }
 
         // 건물 마커 설정

@@ -39,7 +39,7 @@
                         android:orientation="horizontal">
 
                         <ImageButton
-                            android:id="@+id/btn_no"
+                            android:id="@+id/btn_smoke"
                             android:layout_width="0dp"
                             android:layout_height="56dp"
                             android:layout_weight="1"
@@ -50,10 +50,10 @@
                             android:layout_width="0dp"
                             android:layout_height="56dp"
                             android:layout_weight="1"
-                            android:src="@drawable/btn_park_color" />
+                            android:src="@drawable/btn_park_gray" />
 
                         <ImageButton
-                            android:id="@+id/btn_smoke"
+                            android:id="@+id/btn_wheel"
                             android:layout_width="0dp"
                             android:layout_height="56dp"
                             android:layout_weight="1"
