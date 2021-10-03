@@ -251,10 +251,10 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
             public void onClick(View view) {
                 ToggleMarkersVisibility(markers_slope);
                 if(markers_slope.get(0).isVisible()){
-                    imgbtn_slope.setImageResource(R.drawable.btn_park_color);
+                    imgbtn_slope.setImageResource(R.drawable.btn_wheel_color);
                 }
                 else{
-                    imgbtn_slope.setImageResource(R.drawable.btn_park_gray);
+                    imgbtn_slope.setImageResource(R.drawable.btn_wheel_gray);
                 }
             }
         });
@@ -545,10 +545,10 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
                 img_disabled.setImageResource(R.drawable.ic_park_gray);
             }
             if(vertex.get(index).is_slope){
-                img_disabled.setImageResource(R.drawable.ic_wheel_color);
+                img_slope.setImageResource(R.drawable.ic_wheel_color);
             }
             else{
-                img_disabled.setImageResource(R.drawable.ic_wheel_gray);
+                img_slope.setImageResource(R.drawable.ic_wheel_gray);
             }
 
             // 카메라 줌 인
