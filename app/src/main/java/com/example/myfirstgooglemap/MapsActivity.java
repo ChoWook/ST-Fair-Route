@@ -21,7 +21,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -36,8 +35,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.io.*;
 import java.util.*;
@@ -61,9 +60,74 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ArrayList<Marker> markers_disabled, markers_smoking,markers_building;
 
     private static final int NODE = 43; // 노드(학교 장소) 갯수
-    public ArrayList<Vertex> vertex;       // vertex 객체배열
+    public static ArrayList<Vertex> vertex = new ArrayList<>(NODE); // vertex 객체배열
 
-    private PolylineOptions polylineOptions = new PolylineOptions();
+    public int convert(String spot) {
+        int result = -1; // 못 찾았을 경우, -1로 반환합니다.
+
+        // 건물이름으로 찾습니다.
+        for(int i = 0; i < NODE; i++) {
+            if(spot.equals(vertex.get(i).name) | spot.equals(vertex.get(i).name_eng)) {
+                return i;
+            }
+        }
+        return result;
+    }
+
+    // 길찾기 버튼 클릭 리스너 추가바람
+    img_search.setOnClickListener(new View.OnClickListener(){
+        @Override
+        public void onClick(View view) {
+            // 출발지랑 도착지 넣는 텍스트 뷰에서 값 가져오기
+            int start = convert(autotext_building.getText().toString()); // 선택한 출발지를 객체배열의 고유번호로 바꿔줍니다.
+            int end = convert(autotext_building.getText().toString()); // 선택한 도착지를 객체배열의 고유번호로 바꿔줍니다.
+
+            Daijkstra path = Daijkstra.getInstance(); // 다익스트라 singleton 객체 Path를 생성합니다.
+
+            try {
+                setVertex(); // vertex 초기화
+                path.calDaijkstra(FALSE, vertex); // 경로 계산
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            String[] pathNode = path.getPathNode().split(" ", 0); // 계산된 경로(String)을 연산을 위해 배열로 만듭니다.
+
+            // 캠퍼스지도상에 그릴 polyLine객체를 pathNode를 토대로 생성합니다.
+            for(int i = 1; i < pathNode.length; i++) {
+                int vertexNum = Integer.parseInt(pathNode[i]);
+                // polyline 그리는 코드
+                mMap.addPolyline((new PolylineOptions()).add(new LatLng(vertex.get(vertexNum-1).latitude, vertex.get(vertexNum-1).longitude),
+                        new LatLng(vertex.get(vertexNum).latitude, vertex.get(vertexNum).longitude)).width(5).color(Color.RED).geodesic(TRUE));
+            }
+
+            // 건물 고유숫자로 된 경로를 건물명으로 바꿉니다.
+            String pathInfo = "";
+            for(int i = 0; i < pathNode.length; i++) {
+                pathInfo += vertex[Integer.parseInt(pathNode[i])].name;
+                if(i == pathNode.length-1)
+                    break;
+                pathInfo += " -> ";
+            }
+
+            /* 있으면 좋을듯한 추가기능
+            int minute = path.getTime() / 60;
+            int second = path.getTime() % 60;
+
+            pathTf.setText("경로 : " + pathInfo + " (총 " + path.getNodeCount() + "곳 지남)"); // 경로 표시
+            meterTf.setText("거리 : " + path.getMeter() + "m"); // 거리 표시
+            timeTf.setText("예상 소요시간 : " + minute + "분 " + second + "초"); //
+            BorderPane textPn = new BorderPane();
+            pathTf.setPrefWidth(700);
+            meterTf.setPrefWidth(100);
+            timeTf.setPrefWidth(200);
+
+            textPn.setTop(pathTf);
+            textPn.setLeft(meterTf);
+            textPn.setCenter(timeTf);
+             */
+        }
+    });
+
 
     private static final double[] DISABLED_PARKING_POINTS = {
             37.635782, 127.076478,   // 성림학사
